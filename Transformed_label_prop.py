@@ -1,4 +1,4 @@
-# Build Graph from Herlev
+# Herlevのデータ。prompt: 643行のKeyとValueから構成されるmerged_data.jsonを読み込みます。Keyをグラフのノードとし、Valueはそのノードの特徴ベクトル（768次元）を表します。このmerged_data.jsonの最初の128行は似たValueどうしが集まっています。すなわち、light_dysplasticとして互いに類似したデータです。次の103行は、moderate_dysplasticとして互いに類似したデータです。次の69行はnormal_columnarとして互いに類似したデータです。次の105行はcarcinoma_in_situとして互いに類似したデータです。次の51行はnormal_superficieとして互いに類似したデータです。次の49行はnormal_intermediateとして互いに類似したデータです。最後の138行はsevere_dysplasticとして互いに類似したデータです。それぞれの行は、それぞれこの7つに分類された中で類似性が高くなるように、Keyどうしをノードしたグラフを作りたい。これに適するようにKeyどうしの距離を計算するコードを書いて。
 
 import json
 import numpy as np
@@ -38,6 +38,19 @@ num_edges = G.number_of_edges()
 print("エッジ数:", num_edges)
 
 '''
+degrees = dict(G.degree())
+
+# 次数の合計を計算
+sum_of_degrees = sum(degrees.values())
+
+# ノード数を取得
+num_nodes = G.number_of_nodes()
+
+# 平均次数を計算
+average_degree = sum_of_degrees / num_nodes
+print("平均次数:", average_degree)
+
+
 # 各ノードの次数をリストに格納
 degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
 
@@ -55,7 +68,7 @@ plt.show()
 boundaries = [0, 128, 231, 300, 405, 456, 505, 643]
 labels = ["light_dysplastic", "moderate_dysplastic", "normal_columnar", "carcinoma_in_situ", "normal_superficie", "normal_intermediate", "severe_dysplastic"]
 
-# エッジの追加 (類似度に基づいて、かつ同じカテゴリ内のみ)
+# エッジの追加 (類似度に基づいて、かつ同じカテゴリ内のみでいったん試してみたもの。本実験では使わない)
 for i in range(len(similarity_matrix)):
     for j in range(i + 1, len(similarity_matrix)):  # i+1から始めることで重複を回避
         # カテゴリの判定
@@ -71,6 +84,8 @@ for i in range(len(similarity_matrix)):
         if category_i == category_j and similarity_matrix[i, j] > 0.75:
             G.add_edge(nodes[i], nodes[j], weight=similarity_matrix[i, j])
 '''
+
+
 # グラフオブジェクトGから隣接行列を「S0」として行列に変換
 # そのうえで、モデル学習をするため、数値データを0から1の間で非負の実数に変換して計算可能にしておく
 S0 = nx.adjacency_matrix(G)
@@ -100,7 +115,7 @@ for num_rows, row_values in patterns:
     matrix_list.extend([row_values] * num_rows)
 
 # 作ったリストを、NumPy配列に変換
-# 既知ラベル行列「Y1」を作る（すべてのノードにラベルが付与されている）
+# 既知ラベル行列(正解値)「Y1」を作る（すべてのノードにラベルが付与されている）
 Y1 = np.array(matrix_list)
 
 # ラベルノイズを疑似的に生成する関数
@@ -117,7 +132,7 @@ def modify_matrix(matrix):
     num_rows = matrix.shape[0]
 
     # ★SG値。ランダムノイズの割合をランダムに選択　0.1なら全体の10%に誤りをいれる
-    random_indices = np.random.choice(num_rows, int(num_rows * 0.1), replace=False)
+    random_indices = np.random.choice(num_rows, int(num_rows * 0.15), replace=False)
 
     # 選択された行に対して処理
     for i in random_indices:
@@ -132,8 +147,29 @@ def modify_matrix(matrix):
     return matrix, random_indices
 # ラベルノイズ疑似生成関数ここまで
 
+'''
+def show_matching_rows(Y0, F, changed_row):
+    """
+    要素が同じ行の数をカウントし、一致した行のインデックスを返す関数
 
-# ここからは実験の準備として、完全なる既知ラベル行列Y1から、わざと
+    Args:
+        Y0: numpy.ndarray
+        F: numpy.ndarray
+        changed_row: int (未使用)
+
+    Returns:
+        list: 一致した行のインデックスのリスト
+    """
+
+    matching_indices = []
+    for i in range(Y0.shape[0]):
+        if np.array_equal(Y0[i], F[i]):
+            matching_indices.append(i)
+    return matching_indices
+'''
+
+
+# ここからは実験の準備として、正解である完全なる既知ラベル行列Y1から、わざと
 # いくつかラベルを間違えた結果（ラベルノイズが入ったものを生成）の
 # 行列を「Y0」とし、変更された行をchanged_rowとして出力しておく
 Y0, changed_row = modify_matrix(Y1)
@@ -142,15 +178,17 @@ print(changed_row)
 
 # 実験その1. 試行数。
 num_trials = 11
+
 # 各試行の結果を格納するリスト（11個の行列Fを格納するリスト）
 all_F = []
 
-# ここから実験開始。初期ノードを選定するため、ランダムにゼロにした初期ノード
-# ラベル行列Y2を作る（これを11回試行するwhileの修正をここから加える）
+# ここから実験開始。初期ノードを選定するため、ランダムにゼロにした
+# 初期ラベル行列Y2を作る（これを11回試行する。なお111回まで試しても優位な精度向上は見られなかった）
 
 for _ in range(num_trials):
  # ★SG値。例えば　> 0.3 ということは全体の3割をゼロとして、7割をそのまま初期データとして残すということ
- Y2 = np.array([row if np.random.rand() > 0.3 else np.zeros_like(row) for row in Y0])
+ # Y2は実験（ラベル伝播計算）のため便宜的に一時作成したもの
+ Y2 = np.array([row if np.random.rand() > 0.5 else np.zeros_like(row) for row in Y0])
  #print(Y2)
 
  # ここからラベル伝播の式を計算。
@@ -200,14 +238,15 @@ print("正しい既知ラベル行列との差分がどれだけあるか:", num_diff)
 
 
 
-# 最後は集計。入れたノイズのうち、どれだけのラベルを当てられたか（変更が入ったか）
+# 最後は集計。入れたノイズ（意図的にわざと誤ったchanged_row）のうち、
+# どれだけのラベルを当てられたか（変更が入ったか）
 
 def count_matching_rows(matrix1, matrix2, row_indices):
     """
     指定した行番号の行の要素の並びが完全に一致している数をカウントする
     Args:
         matrix1, matrix2: 比較する2つの行列
-        row_indices: 比較する行のインデックスのリスト
+        row_indices: 比較する行のインデックスのリスト(すなわちchanged_rowの範囲で比較)
     Returns:
         完全に一致した行の数
     """
@@ -224,9 +263,80 @@ def count_matching_rows(matrix1, matrix2, row_indices):
 
     return matching_count
 
+# そしてこれが、この実験でもっとも行いたかった結果。Channged_rowの範囲でふたつの
+# 行列の行が一致した、ということは、計算結果Fが、Y0で混入されたラベルノイズを検出できたということ
 matching_count = count_matching_rows(Y0, F, changed_row)
 print("matched:")
 print(matching_count)
+
+
+#matching_indices = show_matching_rows(Y0, F, 0)
+#print("matched rows at indices:")
+#print(matching_indices)
+
+
+def find_different_rows(Y0, F):
+    """
+    要素が異なる行のインデックスを返す関数
+
+    Args:
+        Y0: numpy.ndarray
+        F: numpy.ndarray
+
+    Returns:
+        list: 要素が異なる行のインデックスのリスト
+    """
+
+    different_indices = []
+    for i in range(Y0.shape[0]):
+        if not np.array_equal(Y0[i], F[i]):
+            different_indices.append(i)
+    return different_indices
+
+
+different_indices = find_different_rows(Y1, F)
+#print("要素が異なる行のインデックス:", different_indices)
+
+set1 = set(changed_row)
+set2 = set(different_indices)
+
+#共通要素、すなわち、我々の実験で検出に失敗したノードのリスト（行番号）
+common_elements = set1.intersection(set2)
+print("共通要素:", list(common_elements))
+
+#changed_row（の集合型）set1から共通要素（の集合型）common_elementsを差し引いた集合が、実験で検出に成功したノードとなる。
+set_success = set1 - common_elements
+print("成功", list(set_success))
+
+# ここからは考察のため、検出に失敗したノードのPageRankと、検出できたノードのPageRankを比較する
+pr = nx.pagerank(G,alpha=0.75,weight='weight')
+
+# ノードIDと行番号の対応を辞書に格納
+node_to_index = {node: index for index, node in enumerate(G.nodes)}
+
+# 検出に失敗したlist内の行番号に対応するPageRankスコアを抽出
+result1 = {node: (score, node_to_index[node]) for node, score in pr.items() if node_to_index[node] in common_elements}
+
+# スコアのリストを作成
+scores = [score for node, (score, _) in result1.items()]
+
+# スコアの平均値を計算
+average_score = sum(scores) / len(scores)
+
+print("検出失敗のPRスコアの平均値:", average_score)
+#print(result1)
+
+# 逆に、検出に成功したlist内の行番号に対応するPageRankスコアを抽出
+result2 = {node: (score, node_to_index[node]) for node, score in pr.items() if node_to_index[node] in set_success}
+
+# スコアのリストを作成
+scores = [score for node, (score, _) in result2.items()]
+
+# スコアの平均値を計算
+average_score = sum(scores) / len(scores)
+
+print("検出成功のPRスコアの平均値:", average_score)
+#print(result2)
 
 '''
 # スプリングレイアウト
