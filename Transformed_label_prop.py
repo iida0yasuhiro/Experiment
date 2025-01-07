@@ -1,11 +1,15 @@
-# Herlevのデータ。prompt: 643行のKeyとValueから構成されるmerged_data.jsonを読み込みます。Keyをグラフのノードとし、Valueはそのノードの特徴ベクトル（768次元）を表します。このmerged_data.jsonの最初の128行は似たValueどうしが集まっています。すなわち、light_dysplasticとして互いに類似したデータです。次の103行は、moderate_dysplasticとして互いに類似したデータです。次の69行はnormal_columnarとして互いに類似したデータです。次の105行はcarcinoma_in_situとして互いに類似したデータです。次の51行はnormal_superficieとして互いに類似したデータです。次の49行はnormal_intermediateとして互いに類似したデータです。最後の138行はsevere_dysplasticとして互いに類似したデータです。それぞれの行は、それぞれこの7つに分類された中で類似性が高くなるように、Keyどうしをノードしたグラフを作りたい。これに適するようにKeyどうしの距離を計算するコードを書いて。
+# Herlevのデータを我々の手法でグラフにしラベルノイズを検出する。
 
 import json
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import powerlaw
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.preprocessing import minmax_scale # Import minmax_scale from sklearn.preprocessing
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 from scipy import stats
 from scipy.stats import mode
 
@@ -27,6 +31,43 @@ G = nx.Graph()
 nodes = list(data.keys())
 G.add_nodes_from(nodes)
 
+def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
+    """
+    ノードベクトルからLLEを用いてグラフを生成する関数
+
+    Args:
+        node_vectors: 各ノードの634次元のベクトルを要素とするリスト
+        n_components: LLEで埋め込む次元数
+        n_neighbors: LLEで使用する近傍点の数
+        metric: 類似度を計算する際のメトリクス
+
+    Returns:
+        NetworkXのグラフオブジェクト
+    """
+
+    # ノードベクトルをNumPy配列に変換
+    X = np.array(node_vectors)
+
+    # LLEによる次元削減
+    embedding = LocallyLinearEmbedding(n_components=n_components, n_neighbors=n_neighbors)
+    X_transformed = embedding.fit_transform(X)
+
+    # 低次元空間におけるノード間の距離に基づいてエッジを張る
+    # 距離がthreshold以下のノード同士にエッジを張るようにする
+    threshold = 0.4 # この値は小さすぎると計算に失敗するので注意
+    G_lle = nx.Graph()
+    for i in range(len(X_transformed)):
+        for j in range(i+1, len(X_transformed)):
+            distance = np.linalg.norm(X_transformed[i] - X_transformed[j])
+            if distance <= threshold:
+                G_lle.add_edge(i, j)
+
+    return G_lle
+  
+# LLEで作ったグラフ
+G_lle = create_lle_graph(list(data.values()), 100, 15, 'cosine')
+
+
 # エッジの追加 (類似度に基づいて)
 for i in range(len(similarity_matrix)):
     for j in range(i+1):
@@ -34,11 +75,24 @@ for i in range(len(similarity_matrix)):
         if similarity_matrix[i, j] > 0.74:
             G.add_edge(nodes[i], nodes[j], weight=similarity_matrix[i, j])
 
-num_edges = G.number_of_edges()
+num_edges = G_lle.number_of_edges()
 print("エッジ数:", num_edges)
 
+
 '''
-degrees = dict(G.degree())
+communities = list(nx.algorithms.community.greedy_modularity_communities(G))
+
+# Print the detected communities
+for i, community in enumerate(communities):
+    print(f"Community {i+1}: {list(community)}")
+
+# Calculate and print the modularity of the found communities
+modularity_value = nx.algorithms.community.modularity(G, communities)
+print(f"Modularity: {modularity_value}")
+'''
+
+#degrees = dict(G.degree())
+degrees = dict(G_lle.degree())
 
 # 次数の合計を計算
 sum_of_degrees = sum(degrees.values())
@@ -50,13 +104,86 @@ num_nodes = G.number_of_nodes()
 average_degree = sum_of_degrees / num_nodes
 print("平均次数:", average_degree)
 
+isolates = list(nx.isolates(G))
+G.remove_nodes_from(isolates)
+
+# ネットワーク径
+#diameter = nx.diameter(G)
+#print("ネットワーク径:", diameter)
+
+# 平均ノード間距離
+#average_shortest_path_length = nx.average_shortest_path_length(G)
+#print("平均ノード間距離:", average_shortest_path_length)
+
+# クラスタ係数（グラフ全体の平均）
+# average_clustering = nx.average_clustering(G)
+# print("クラスタ係数:", average_clustering)
+
+average_clustering = nx.average_clustering(G_lle)
+print("クラスタ係数:", average_clustering)
+
+
+# 各ノードのクラスタ係数
+# node_clustering = nx.clustering(G)
+# print("各ノードのクラスタ係数:", node_clustering)
+
+'''
+# x軸: 度数 (logスケール)
+x = np.arange(min(degree_sequence), max(degree_sequence) + 1)
+x = np.log10(x)  # 対数変換
+
+# y軸: 度数を持つノード数 (logスケール)
+y = [list(degree_sequence).count(i) for i in 10**x]  # xに対応する値でカウント
+y = np.log10(y)
+
+# 線形回帰モデルを作成
+model = LinearRegression()
+
+# データをreshapeしてモデルにフィット
+X = x.reshape(-1, 1)
+model.fit(X, y)
+
+# 予測値
+y_pred = model.predict(X)
+
+# プロット
+plt.loglog(10**x, 10**y, 'bo', label='data')
+plt.loglog(10**x, 10**y_pred, 'r-', label='fit')
+plt.xlabel('Degree')
+plt.ylabel('Count')
+plt.title('Degree Distribution')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 回帰係数と切片
+print('傾き:', model.coef_[0])
+print('切片:', model.intercept_)
+'''
 
 # 各ノードの次数をリストに格納
-degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+#degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+degree_sequence = sorted([d for n, d in G_lle.degree()], reverse=True)
 
+# x軸: 度数 (logスケール)
+x = np.arange(min(degree_sequence), max(degree_sequence) + 1)
+
+# y軸: 度数を持つノード数 (logスケール)
+y = [list(degree_sequence).count(i) for i in x]
+
+
+plt.loglog(x, y, 'bo')  # log-logプロット
+plt.xlabel('Degree')
+plt.ylabel('Count')
+plt.title('Herlev Graph Degree Distribution')
+plt.grid(True)
+plt.show()
+
+
+'''
 # 次数分布をヒストグラムで可視化
 plt.hist(degree_sequence, bins=20, color='blue')
-plt.title("degree distribution")
+plt.title("Herlev Graph Degree Distribution")
 plt.ylabel("# of node")
 plt.xlabel("degree")
 plt.show()
@@ -88,7 +215,13 @@ for i in range(len(similarity_matrix)):
 
 # グラフオブジェクトGから隣接行列を「S0」として行列に変換
 # そのうえで、モデル学習をするため、数値データを0から1の間で非負の実数に変換して計算可能にしておく
-S0 = nx.adjacency_matrix(G)
+#S0 = nx.adjacency_matrix(G)
+#S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
+# print(S)
+
+# G_lle
+
+S0 = nx.adjacency_matrix(G_lle)
 S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
 # print(S)
 
@@ -132,7 +265,7 @@ def modify_matrix(matrix):
     num_rows = matrix.shape[0]
 
     # ★SG値。ランダムノイズの割合をランダムに選択　0.1なら全体の10%に誤りをいれる
-    random_indices = np.random.choice(num_rows, int(num_rows * 0.15), replace=False)
+    random_indices = np.random.choice(num_rows, int(num_rows * 0.1), replace=False)
 
     # 選択された行に対して処理
     for i in random_indices:
@@ -188,7 +321,7 @@ all_F = []
 for _ in range(num_trials):
  # ★SG値。例えば　> 0.3 ということは全体の3割をゼロとして、7割をそのまま初期データとして残すということ
  # Y2は実験（ラベル伝播計算）のため便宜的に一時作成したもの
- Y2 = np.array([row if np.random.rand() > 0.5 else np.zeros_like(row) for row in Y0])
+ Y2 = np.array([row if np.random.rand() > 0.3 else np.zeros_like(row) for row in Y0])
  #print(Y2)
 
  # ここからラベル伝播の式を計算。
