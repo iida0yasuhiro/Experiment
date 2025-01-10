@@ -1,4 +1,4 @@
-# Herlevのデータによる本実験。
+# Herlevのデータ
 
 import json
 import numpy as np
@@ -54,7 +54,7 @@ def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
 
     # 低次元空間におけるノード間の距離に基づいてエッジを張る
     # 距離がthreshold以下のノード同士にエッジを張るようにする
-    threshold = 0.4 # この値は小さすぎると計算に失敗するので注意
+    threshold = 0.32 # この値は小さすぎると計算に失敗するので注意
     G_lle = nx.Graph()
     for i in range(len(X_transformed)):
         for j in range(i+1, len(X_transformed)):
@@ -65,7 +65,7 @@ def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
     return G_lle
 
 # LLEで作ったグラフ
-# G_lle = create_lle_graph(list(data.values()), 100, 15, 'cosine')
+G_lle = create_lle_graph(list(data.values()), 90, 10, 'cosine')
 
 
 # エッジの追加 (類似度に基づいて)
@@ -75,8 +75,8 @@ for i in range(len(similarity_matrix)):
         if similarity_matrix[i, j] > 0.74:
             G.add_edge(nodes[i], nodes[j], weight=similarity_matrix[i, j])
 
-num_edges = G.number_of_edges()
-#num_edges = G_lle.number_of_edges()
+# num_edges = G.number_of_edges()
+num_edges = G_lle.number_of_edges()
 print("エッジ数:", num_edges)
 
 
@@ -92,8 +92,8 @@ modularity_value = nx.algorithms.community.modularity(G, communities)
 print(f"Modularity: {modularity_value}")
 '''
 
-degrees = dict(G.degree())
-#degrees = dict(G_lle.degree())
+#degrees = dict(G.degree())
+degrees = dict(G_lle.degree())
 
 # 次数の合計を計算
 sum_of_degrees = sum(degrees.values())
@@ -127,6 +127,11 @@ print("クラスタ係数:", average_clustering)
 # 各ノードのクラスタ係数
 # node_clustering = nx.clustering(G)
 # print("各ノードのクラスタ係数:", node_clustering)
+
+
+# 各ノードの次数をリストに格納
+# degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+degree_sequence = sorted([d for n, d in G_lle.degree()], reverse=True)
 
 '''
 # x軸: 度数 (logスケール)
@@ -162,11 +167,8 @@ print('傾き:', model.coef_[0])
 print('切片:', model.intercept_)
 '''
 
-'''
-# 各ノードの次数をリストに格納
-degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
-# degree_sequence = sorted([d for n, d in G_lle.degree()], reverse=True)
 
+'''
 # x軸: 度数 (logスケール)
 x = np.arange(min(degree_sequence), max(degree_sequence) + 1)
 
@@ -217,14 +219,14 @@ for i in range(len(similarity_matrix)):
 
 # グラフオブジェクトGから隣接行列を「S0」として行列に変換
 # そのうえで、モデル学習をするため、数値データを0から1の間で非負の実数に変換して計算可能にしておく
-S0 = nx.adjacency_matrix(G)
+#S0 = nx.adjacency_matrix(G)
+#S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
+#print(S)
+
+G_lle
+S0 = nx.adjacency_matrix(G_lle)
 S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
 print(S)
-
-# G_lle
-#S0 = nx.adjacency_matrix(G_lle)
-#S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
-# print(S)
 
 
 # ここからは既知ラベルで埋めたY1（917 x 7）を作る。
@@ -266,7 +268,7 @@ def modify_matrix(matrix):
     num_rows = matrix.shape[0]
 
     # ★SG値。ランダムノイズの割合をランダムに選択　0.1なら全体の10%に誤りをいれる
-    random_indices = np.random.choice(num_rows, int(num_rows * 0.1), replace=False)
+    random_indices = np.random.choice(num_rows, int(num_rows * 0.05), replace=False)
 
     # 選択された行に対して処理
     for i in random_indices:
@@ -310,7 +312,7 @@ Y0, changed_row = modify_matrix(Y1)
 
 print(changed_row)
 
-# 実験その1. 試行数。
+# 実験その1. 試行数。（ただし111回まで試行数を増加させても目立った変化はなし）
 num_trials = 11
 
 # 各試行の結果を格納するリスト（11個の行列Fを格納するリスト）
@@ -322,7 +324,7 @@ all_F = []
 for _ in range(num_trials):
  # ★SG値。例えば　> 0.3 ということは全体の3割をゼロとして、7割をそのまま初期データとして残すということ
  # Y2は実験（ラベル伝播計算）のため便宜的に一時作成したもの
- Y2 = np.array([row if np.random.rand() > 0.3 else np.zeros_like(row) for row in Y0])
+ Y2 = np.array([row if np.random.rand() > 0.5 else np.zeros_like(row) for row in Y0])
  #print(Y2)
 
  # ここからラベル伝播の式を計算。
@@ -412,11 +414,9 @@ print(matching_count)
 def find_different_rows(Y0, F):
     """
     要素が異なる行のインデックスを返す関数
-
     Args:
         Y0: numpy.ndarray
         F: numpy.ndarray
-
     Returns:
         list: 要素が異なる行のインデックスのリスト
     """
@@ -436,11 +436,42 @@ set2 = set(different_indices)
 
 #共通要素、すなわち、我々の実験で検出に失敗したノードのリスト（行番号）
 common_elements = set1.intersection(set2)
-print("共通要素:", list(common_elements))
+print("共通要素、検出失敗のノード行番号:", list(common_elements))
 
 #changed_row（の集合型）set1から共通要素（の集合型）common_elementsを差し引いた集合が、実験で検出に成功したノードとなる。
 set_success = set1 - common_elements
-print("成功", list(set_success))
+print("matchedと同数。検出成功したノード行番号", list(set_success))
+
+
+variances = []
+for row_idx in changed_row:
+    row_data = F0[row_idx, :]  # 指定行のデータを取得
+    variance = np.var(row_data)
+    variances.append(variance)
+
+
+
+print("検出成功したlabel scoreの分散", variances)
+
+mean_variance = np.mean(variances)
+
+print("検出成功したlabel scoreの分散の平均値", mean_variance)
+
+
+unchanged_row = list(common_elements)
+
+variances2 = []
+for row_idx in unchanged_row:
+    row_data = F0[row_idx, :]  # 指定行のデータを取得
+    variance = np.var(row_data)
+    variances2.append(variance)
+
+
+print("検出失敗したlabel scoreの分散", variances2)
+
+mean_variance2 = np.mean(variances2)
+
+print("検出失敗したlabel scoreの分散の平均値", mean_variance2)
 
 # ここからは考察のため、検出に失敗したノードのPageRankと、検出できたノードのPageRankを比較する
 pr = nx.pagerank(G,alpha=0.75,weight='weight')
