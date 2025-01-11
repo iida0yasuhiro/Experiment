@@ -1,4 +1,4 @@
-# Herlevのデータ
+# Herlevのデータ。
 
 import json
 import numpy as np
@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from scipy import stats
 from scipy.stats import mode
 
-# HerlevのJSONファイル(634個のnodeをKey（ファイル名）-Value（特徴ベクトル）で格納)を読み込む
+# HerlevのJSONファイル(917個のnodeをKey（ファイル名）-Value（特徴ベクトル）で格納)を読み込む
 with open('./H_full_merged_data.json', 'r') as f:
     data = json.load(f)
 
@@ -21,6 +21,22 @@ feature_vectors = np.array(list(data.values()))
 
 # コサイン類似度を計算
 similarity_matrix = cosine_similarity(feature_vectors)
+
+'''
+# Hausdorff距離行列を計算
+num_images = feature_vectors.shape[0]
+hausdorff_matrix = np.zeros((num_images, num_images))
+for i in range(num_images):
+    for j in range(i + 1):
+        # 対称行列なので、上三角行列のみ計算
+        # Reshape feature vectors to 2D arrays for directed_hausdorff
+        hausdorff_matrix[i, j] = directed_hausdorff(feature_vectors[i].reshape(1, -1),
+                                                    feature_vectors[j].reshape(1, -1))[0]
+        hausdorff_matrix[j, i] = hausdorff_matrix[i, j]
+
+# Hausdorff距離を類似度に変換（ここでは1-Hausdorff距離）
+similarity_matrix = 1 - (hausdorff_matrix / np.max(hausdorff_matrix))
+'''
 
 
 # グラフオブジェクトの作成
@@ -65,19 +81,30 @@ def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
     return G_lle
 
 # LLEで作ったグラフ
-G_lle = create_lle_graph(list(data.values()), 90, 10, 'cosine')
+# G_lle = create_lle_graph(list(data.values()), 90, 10, 'cosine')
 
 
 # エッジの追加 (類似度に基づいて)
 for i in range(len(similarity_matrix)):
     for j in range(i+1):
-        # ★エッジ類似度の閾値を調整　0.73 なら エッジ数: 1万以上
+        # ★エッジ類似度の閾値を調整　0.73 なら エッジ数: 1万以上. 0.74が最適
         if similarity_matrix[i, j] > 0.74:
             G.add_edge(nodes[i], nodes[j], weight=similarity_matrix[i, j])
 
 # num_edges = G.number_of_edges()
-num_edges = G_lle.number_of_edges()
-print("エッジ数:", num_edges)
+# num_edges = G_lle.number_of_edges()
+# print("エッジ数:", num_edges)
+
+'''
+# 隣接行列をヒートマップで可視化
+plt.figure(figsize=(10, 8))
+plt.imshow(similarity_matrix, cmap='viridis')
+plt.colorbar()
+plt.xlabel('Image')
+plt.ylabel('Image')
+plt.title('Similarity Matrix of Herlev Graph', fontsize=20)
+plt.show()
+'''
 
 
 '''
@@ -92,8 +119,8 @@ modularity_value = nx.algorithms.community.modularity(G, communities)
 print(f"Modularity: {modularity_value}")
 '''
 
-#degrees = dict(G.degree())
-degrees = dict(G_lle.degree())
+degrees = dict(G.degree())
+#degrees = dict(G_lle.degree())
 
 # 次数の合計を計算
 sum_of_degrees = sum(degrees.values())
@@ -130,8 +157,8 @@ print("クラスタ係数:", average_clustering)
 
 
 # 各ノードの次数をリストに格納
-# degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
-degree_sequence = sorted([d for n, d in G_lle.degree()], reverse=True)
+degree_sequence = sorted([d for n, d in G.degree()], reverse=True)
+# degree_sequence = sorted([d for n, d in G_lle.degree()], reverse=True)
 
 '''
 # x軸: 度数 (logスケール)
@@ -179,7 +206,7 @@ y = [list(degree_sequence).count(i) for i in x]
 plt.loglog(x, y, 'bo')  # log-logプロット
 plt.xlabel('Degree')
 plt.ylabel('Count')
-plt.title('Herlev Graph Degree Distribution')
+plt.title('Herlev Graph Degree Distribution', fontsize=20)
 plt.grid(True)
 plt.show()
 '''
@@ -219,14 +246,14 @@ for i in range(len(similarity_matrix)):
 
 # グラフオブジェクトGから隣接行列を「S0」として行列に変換
 # そのうえで、モデル学習をするため、数値データを0から1の間で非負の実数に変換して計算可能にしておく
-#S0 = nx.adjacency_matrix(G)
-#S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
-#print(S)
-
-G_lle
-S0 = nx.adjacency_matrix(G_lle)
+S0 = nx.adjacency_matrix(G)
 S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
 print(S)
+
+# G_lle
+#S0 = nx.adjacency_matrix(G_lle)
+#S = minmax_scale(S0.toarray()) # Use minmax_scale from sklearn.preprocessing and convert S0 to a dense array
+#print(S)
 
 
 # ここからは既知ラベルで埋めたY1（917 x 7）を作る。
@@ -324,11 +351,11 @@ all_F = []
 for _ in range(num_trials):
  # ★SG値。例えば　> 0.3 ということは全体の3割をゼロとして、7割をそのまま初期データとして残すということ
  # Y2は実験（ラベル伝播計算）のため便宜的に一時作成したもの
- Y2 = np.array([row if np.random.rand() > 0.5 else np.zeros_like(row) for row in Y0])
+ Y2 = np.array([row if np.random.rand() > 0.3 else np.zeros_like(row) for row in Y0])
  #print(Y2)
 
  # ここからラベル伝播の式を計算。
- # ★SG値。Set alpha
+ # ★SG値。0.010-0.020 の範囲が適する。
  alpha = 0.014
 
  # Calculate F0
@@ -361,7 +388,6 @@ print(F_final)
 
 # ところで、この計算結果であるFが完全なる既知ラベル行列Y1とどれだけ違ったかを検証してみたい
 mask = Y1 != F_final
-
 
 # マスク内のTrueの数をカウント（つまり、要素が異なる個数）
 num_diff = np.count_nonzero(mask)
@@ -450,7 +476,6 @@ for row_idx in changed_row:
     variances.append(variance)
 
 
-
 print("検出成功したlabel scoreの分散", variances)
 
 mean_variance = np.mean(variances)
@@ -488,7 +513,7 @@ scores = [score for node, (score, _) in result1.items()]
 # スコアの平均値を計算
 average_score = sum(scores) / len(scores)
 
-print("検出失敗のPRスコアの平均値:", average_score)
+print("検出失敗のPRスコアの平均値:", round(average_score,6))
 #print(result1)
 
 # 逆に、検出に成功したlist内の行番号に対応するPageRankスコアを抽出
@@ -500,16 +525,16 @@ scores = [score for node, (score, _) in result2.items()]
 # スコアの平均値を計算
 average_score = sum(scores) / len(scores)
 
-print("検出成功のPRスコアの平均値:", average_score)
+print("検出成功のPRスコアの平均値:", round(average_score,6))
 #print(result2)
 
 '''
 # スプリングレイアウト
-pos = nx.spring_layout(G, k=0.85, iterations=130, weight='weight')
+pos = nx.spring_layout(G, k=0.99, iterations=130, weight='weight')
 # pos = nx.circular_layout(G)
 
 # ノードとエッジの描画
-nx.draw_networkx_nodes(G, pos, node_size=20, node_color='lightblue')
+nx.draw_networkx_nodes(G, pos, node_size=14, node_color='lightblue')
 nx.draw_networkx_edges(G, pos, width=0.1)
 
 # ラベル表示を調整
