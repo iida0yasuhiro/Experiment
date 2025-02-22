@@ -52,6 +52,52 @@ def calculate_entropy(clique, labels):
     return entropy
 
 
+def calculate_entropy_weighted(clique, labels, graph):
+    """
+    クリーク内のラベル分布からエントロピーを計算し、エッジの重みの逆数を乗算する関数
+
+    Args:
+        clique: クリーク内のノードのset
+        labels: 各ノードのラベルを格納した辞書 (key: ノード名, value: ラベル)
+        graph: エッジの重みを格納したネットワークXグラフ
+
+    Returns:
+        クリークのエントロピー値 (エッジの重み逆数を乗算)
+    """
+
+    # clique を list に変換
+    clique_list = list(clique)
+
+    label_counts = {}
+    for node in clique_list:
+        label = labels[node]
+        if label not in label_counts:
+            label_counts[label] = 0
+        label_counts[label] += 1
+
+    entropy = 0
+    num_nodes = len(clique_list)
+    for count in label_counts.values():
+        probability = count / num_nodes
+        entropy -= probability * math.log2(probability)
+
+    # エッジの重みの逆数を計算し、エントロピーに乗算
+    total_inverse_weight = 0
+    for i in range(len(clique_list)):
+        for j in range(i + 1, len(clique_list)):
+            node1 = clique_list[i]
+            node2 = clique_list[j]
+            if graph.has_edge(node1, node2):
+                weight = graph[node1][node2].get('weight', 1)  # 重みが存在しない場合は1とする
+                total_inverse_weight += 1 / weight
+
+    if total_inverse_weight > 0:
+        entropy *= total_inverse_weight
+
+    return entropy
+
+
+
 # グラフオブジェクトの作成
 G = nx.Graph()
 
@@ -171,6 +217,7 @@ for clique in sorted_cliques:
 
     # エントロピーを計算して表示
     entropy = calculate_entropy(clique, {node: G.nodes[node]['label'] for node in clique})
+    #entropy = calculate_entropy_weighted(clique, {node: G.nodes[node]['label'] for node in clique}, G)
     print(f"エントロピー: {entropy}")  # エントロピーを表示
     entropy_values.append(entropy) # リストに追加
 
@@ -191,6 +238,8 @@ print(S)
 # ここからは既知ラベルで埋めたY1（917 x 7）を作る。
 # 最初から何行目かまでは同じパタンの行になるが、そのための各パターンの行数と対応する値のリスト
 # 上から順にSD(197),NC(98),NS(74),CS(150),MD(146),LD(182),NI(70)の計917
+
+
 '''
 patterns = [
     (197, [1,0,0,0,0,0,0]),
@@ -201,7 +250,9 @@ patterns = [
     (182, [0,0,0,0,0,1,0]),
     (70, [0,0,0,0,0,0,1])
 ]
+
 '''
+
 patterns = [
     (197, [0.7,0,0,0.1,0.1,0.1,0]),
     (98, [0,1,0,0,0,0,0]),
@@ -211,6 +262,7 @@ patterns = [
     (182, [0.1,0,0,0.1,0.1,0.7,0]),
     (70, [0,0,0,0,0,0,1])
 ]
+
 '''
 patterns = [
     (197, [0.7,0,0,0.1,0.1,0.1,0]),
@@ -248,8 +300,8 @@ def modify_matrix(matrix):
     # 行数を取得（917行）
     num_rows = matrix.shape[0]
 
-    # ★SG値。ランダムノイズの割合をランダムに選択　0.1なら全体の10%に誤りをいれる
-    random_indices = np.random.choice(num_rows, int(num_rows * 0.1), replace=False)
+    # ★★★SG値。ランダムノイズの割合をランダムに選択　0.1なら全体の10%に誤りをいれる
+    random_indices = np.random.choice(num_rows, int(num_rows * 0.05), replace=False)
 
     # 選択された行に対して処理
     for i in random_indices:
@@ -313,6 +365,7 @@ for clique in sorted_cliques:
 
     # エントロピーを計算して表示
     entropy = calculate_entropy(clique, {node: G.nodes[node]['label'] for node in clique})
+#    entropy = calculate_entropy_weighted(clique, {node: G.nodes[node]['label'] for node in clique}, G)
     print(f"エントロピー: {entropy}")  # エントロピーを表示
     entropy_values_after.append(entropy) # リストに追加
 
@@ -334,7 +387,7 @@ all_F = []
 for _ in range(num_trials):
  # ★SG値。例えば　> 0.3 ということは全体の3割をゼロとして、7割をそのまま初期データとして残すということ
  # Y2は実験（ラベル伝播計算）のため便宜的に一時作成したもの
- Y2 = np.array([row if np.random.rand() > 0.2 else np.zeros_like(row) for row in Y0])
+ Y2 = np.array([row if np.random.rand() > 0.3 else np.zeros_like(row) for row in Y0])
  #print(Y2)
 
  # ここからラベル伝播の式を計算。
@@ -454,6 +507,7 @@ for clique in sorted_cliques:
 
     # エントロピーを計算して表示
     entropy = calculate_entropy(clique, {node: G.nodes[node]['label'] for node in clique})
+#    entropy = calculate_entropy_weighted(clique, {node: G.nodes[node]['label'] for node in clique}, G)
     print(f"エントロピー: {entropy}")  # エントロピーを表示
     entropy_values_after.append(entropy) # リストに追加
 
