@@ -10,16 +10,36 @@ from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.preprocessing import minmax_scale # Import minmax_scale from sklearn.preprocessing
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import NearestNeighbors
 from scipy import stats
 from scipy.stats import mode
+from scipy.spatial.distance import pdist, squareform # Import pdist and squareform
+from scipy.spatial.distance import minkowski
+from scipy.spatial.distance import directed_hausdorff
 from collections import Counter
 
-# HerlevのJSONファイル(917個のnodeをKey（ファイル名）-Value（特徴ベクトル）で格納)を読み込む
+# JSONファイル(950個のnodeをKey（ファイル名）-Value（特徴ベクトル）で格納)を読み込む
 with open('./S_merged_data.json', 'r') as f:
     data = json.load(f)
 
 # 特徴ベクトルをNumPy配列に変換
 feature_vectors = np.array(list(data.values()))
+
+
+# Hausdorff距離行列を計算
+num_images = feature_vectors.shape[0]
+hausdorff_matrix = np.zeros((num_images, num_images))
+for i in range(num_images):
+    for j in range(i + 1):
+        # 対称行列なので、上三角行列のみ計算
+        # Reshape feature vectors to 2D arrays for directed_hausdorff
+        hausdorff_matrix[i, j] = directed_hausdorff(feature_vectors[i].reshape(1, -1),
+                                                    feature_vectors[j].reshape(1, -1))[0]
+        hausdorff_matrix[j, i] = hausdorff_matrix[i, j]
+
+# Hausdorff距離を類似度に変換（ここでは1-Hausdorff距離）
+#similarity_matrix = 1 - (hausdorff_matrix / np.max(hausdorff_matrix))
+
 
 # コサイン類似度を計算
 similarity_matrix = cosine_similarity(feature_vectors)
@@ -38,13 +58,28 @@ labels = ['ME'] * 271 + ['KO'] * 232 + ['DY'] * 223 + ['PA'] * 108 + ['SU'] * 11
 for i, node in enumerate(G.nodes()):
     G.nodes[node]['label'] = labels[i]
 
+
+# k-NNモデルの作成と学習
+k = 5  # 大きいと失敗する
+knn = NearestNeighbors(n_neighbors=k + 1)  # 自分自身を含めるため+1
+knn.fit(feature_vectors)
+
+# 各ノードのk近傍を求める
+distances, indices = knn.kneighbors(feature_vectors)
+
+# エッジ追加 (k-NNに基づいて)
+for i in range(len(feature_vectors)):
+    for j in indices[i, 1:]:  # 自分自身を除外するため1:
+        G.add_edge(nodes[i], nodes[j], weight=1 - distances[i, j])  # 距離を重みに変換
+
+'''    
 # エッジ追加 (類似度に基づいて)
 for i in range(len(similarity_matrix)):
     for j in range(i+1):
         # ★エッジ類似度の閾値を調整　0.73 なら エッジ数: 1万以上. 0.74が最適
-        if similarity_matrix[i, j] > 0.65:
+        if similarity_matrix[i, j] > 0.74:
             G.add_edge(nodes[i], nodes[j], weight=similarity_matrix[i, j])
-
+'''
 
 def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
     """
@@ -69,7 +104,7 @@ def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
 
     # 低次元空間におけるノード間の距離に基づいてエッジを張る
     # 距離がthreshold以下のノード同士にエッジを張るようにする
-    threshold = 0.386 # この値は小さすぎると計算に失敗するので注意.0.365で失敗
+    threshold = 0.389 # この値は小さすぎると計算に失敗するので注意.0.365で失敗
     G_lle = nx.Graph()
     for i in range(len(X_transformed)):
         for j in range(i+1, len(X_transformed)):
@@ -80,10 +115,10 @@ def create_lle_graph(node_vectors, n_components, n_neighbors, metric='cosine'):
     return G_lle
 
 # LLEで作ったグラフ
-G_lle = create_lle_graph(list(data.values()), 140, 15, 'cosine')
+#G_lle = create_lle_graph(list(data.values()), 140, 15, 'cosine')
 # 150で失敗か
 
-num_edges = G_lle.number_of_edges()
+num_edges = G.number_of_edges()
 print("エッジ数:", num_edges)
 
 # ノードラベル追加
@@ -91,7 +126,7 @@ for i, node in enumerate(G_lle.nodes()):
     G_lle.nodes[node]['label'] = labels[i]
 
 
-def weighted_simrank(G, c=0.9, max_iter=100, eps=1e-6):
+def weighted_simrank(G, c=0.8, max_iter=100, eps=1e-6):
     """重み付き無向グラフに対してSimRankを計算する関数
 
     Args:
@@ -131,7 +166,8 @@ def weighted_simrank(G, c=0.9, max_iter=100, eps=1e-6):
     return sim_matrix.toarray()
 
 # SimRankの計算
-sim_matrix = weighted_simrank(G_lle)
+#sim_matrix = weighted_simrank(G_lle)
+sim_matrix = weighted_simrank(G)
 
 # 結果の表示 (最初の5x5行列)
 # print(sim_matrix[:5, :5])
@@ -154,7 +190,7 @@ while True:
                 neighbor_node_label = G.nodes[neighbor_node_name]['label']
                 print(f"{rank+1}. {neighbor_node_name} ({neighbor_node_label}): {score:.4f}")
                 simrank_labels.append(neighbor_node_label)
-            
+
             same_label_count = simrank_labels.count(node_label)
             print(f"SimRankの結果のうち、入力ノードと同じラベルの数: {same_label_count}")
 
@@ -170,7 +206,7 @@ while True:
                 neighbor_node_label = G.nodes[neighbor_node_name]['label']
                 print(f"{rank+1}. {neighbor_node_name} ({neighbor_node_label}): {score:.4f}")
                 cosine_labels.append(neighbor_node_label)
-            
+
             same_label_count = cosine_labels.count(node_label)
             print(f"Cosine Similarityの結果のうち、入力ノードと同じラベルの数: {same_label_count}")
 
@@ -189,18 +225,28 @@ for user_input in range(len(nodes)):
     node_label = G.nodes[node_name]['label']
     sim_scores = list(enumerate(sim_matrix[user_input]))
     sim_scores.sort(key=lambda x: x[1], reverse=True)
-    simrank_labels = [G.nodes[nodes[node_idx]]['label'] for node_idx, _ in sim_scores[:3]]
+    simrank_labels = [G.nodes[nodes[node_idx]]['label'] for node_idx, _ in sim_scores[:2]]
     same_label_count_simrank = simrank_labels.count(node_label)
     total_simrank_same_labels += same_label_count_simrank
-    print(f"ノード {user_input} ({node_name}, {node_label}) SimRank: 同じラベルの数 {same_label_count_simrank}")
+    #print(f"ノード {user_input} ({node_name}, {node_label}) SimRank: 同じラベルの数 {same_label_count_simrank}")
+    #target_feature = feature_vectors[user_input]
+    #cosine_similarities = cosine_similarity([target_feature], feature_vectors)[0]
+    #cosine_sim_scores = list(enumerate(cosine_similarities))
+    #cosine_sim_scores.sort(key=lambda x: x[1], reverse=True)
+    #cosine_labels = [G.nodes[nodes[node_idx]]['label'] for node_idx, _ in cosine_sim_scores[1:3]]
+    #same_label_count_cosine = cosine_labels.count(node_label)
+    #total_cosine_same_labels += same_label_count_cosine
+    #print(f"ノード {user_input} ({node_name}, {node_label}) Cosine Similarity: 同じラベルの数 {same_label_count_cosine}")
+    # Hausdorff距離に基づく類似度スコアを計算
+    hausdorff_similarities = 1 - (hausdorff_matrix[user_input] / np.max(hausdorff_matrix))
+    hausdorff_sim_scores = list(enumerate(hausdorff_similarities))
+    hausdorff_sim_scores.sort(key=lambda x: x[1], reverse=True)
+    
+    # 上位2件のラベルを取得
+    hausdorff_labels = [G.nodes[nodes[node_idx]]['label'] for node_idx, _ in hausdorff_sim_scores[1:3]]
+    
+    # 同じラベルの数をカウント
+    same_label_count_hausdorff = hausdorff_labels.count(node_label)
+    total_cosine_same_labels += same_label_count_hausdorff
 
-    target_feature = feature_vectors[user_input]
-    cosine_similarities = cosine_similarity([target_feature], feature_vectors)[0]
-    cosine_sim_scores = list(enumerate(cosine_similarities))
-    cosine_sim_scores.sort(key=lambda x: x[1], reverse=True)
-    cosine_labels = [G.nodes[nodes[node_idx]]['label'] for node_idx, _ in cosine_sim_scores[1:4]]
-    same_label_count_cosine = cosine_labels.count(node_label)
-    total_cosine_same_labels += same_label_count_cosine
-    print(f"ノード {user_input} ({node_name}, {node_label}) Cosine Similarity: 同じラベルの数 {same_label_count_cosine}")
-
-print(f"SimRank: 同じラベルの合計数 {total_simrank_same_labels}, Cosine Similarity: 同じラベルの合計数 {total_cosine_same_labels}")
+print(f"SimRank: 同じラベルの合計数 {(total_simrank_same_labels)/1900}, Cosine Similarity: 同じラベルの合計数 {(total_cosine_same_labels)/1900}")
