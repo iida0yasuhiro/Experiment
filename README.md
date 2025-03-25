@@ -1,5 +1,5 @@
 # Experiment
-Transformed label propagation algorithm with Herlv, SIPaKMeD, and Cytology dataset.
+Transformed label propagation algorithm with Herlev, SIPaKMeD, and Cytology dataset.
 This result is discussed in the following thesis.
 
 - (To Appear) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "The label noise detection with graph-based reliability estimation methodology in Pap smear image annotation, " to appear.
