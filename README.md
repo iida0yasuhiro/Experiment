@@ -8,4 +8,4 @@ This result is discussed in the following thesis.
      Proc. of International Conference on Industry 4.0 – Management Challenges, Digital Trends, and the Application of Artificial Intelligence, March 28th 2025.
 - (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Graph-based Similarity Search for Robust Annotation in Cervical Cytology," to appear.
   
-Full Paper of each research will upload complying with each conference stipulations.
+Full Paper of each research will be uploaded only if it complies with each conference stipulations.
