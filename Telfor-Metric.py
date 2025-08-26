@@ -170,7 +170,7 @@ def run_analysis(data, labels_list, threshold, noise_percentage=0):
     del similarity_matrix
     gc.collect()
 
-    print("自作関数で極大クリークを計算中...")
+    print("極大クリークを計算...")
     all_cliques = find_maximal_cliques(G)
     print(f"見つかった極大クリークの総数: {len(all_cliques)}個")
 
@@ -204,16 +204,16 @@ try:
     with open('./H_full_merged_data.json', 'r') as f:
         data = json.load(f)
 except FileNotFoundError:
-    print("Herlevのデータファイルが見つかりません。ダミーデータを使用します。")
+    print("Herlevのデータファイルがない場合のエラー回避のみ。")
     num_nodes = 917
     nodes = [f'node_{i}' for i in range(num_nodes)]
     feature_vectors_dummy = np.random.rand(num_nodes, 10)
     data = {nodes[i]: feature_vectors_dummy[i].tolist() for i in range(num_nodes)}
 
 labels_list_original = ['SD'] * 197 + ['NC'] * 98 + ['NS'] * 74 + ['CS'] * 150 + ['MD'] * 146 + ['LD'] * 182 + ['NI'] * 70
-num_runs = 3
+num_runs = 10 #試行回数（信頼性区間）
 
-# --- 最初の分析：ノイズ率を変化させる場合 ---
+# --- 最初の設定：ノイズ率を変化させる場合 ---
 results_by_noise = {}
 noise_definitions = {
     '0%_noise': 0.0,
@@ -223,9 +223,9 @@ noise_definitions = {
     '40%_noise': 0.4,
     '50%_noise': 0.5
 }
-threshold_fixed = 0.75
+threshold_fixed = 0.74
 
-print("--- ノイズ率変化の分析開始 ---")
+print("--- ノイズ率変化の計算開始 ---")
 for name, noise_percentage in noise_definitions.items():
     run_simple_entropies = []
     run_modified_nkd_entropies = []
@@ -243,13 +243,13 @@ for name, noise_percentage in noise_definitions.items():
         'modified_nkd_mean': np.mean(run_modified_nkd_entropies, axis=0),
         'modified_nkd_std': np.std(run_modified_nkd_entropies, axis=0),
     }
-print("--- ノイズ率変化の分析終了 ---")
+print("--- ノイズ率変化の終了 ---")
 
 # --- 最初のプロット：min_sizes vs. Average Entropy ---
 plt.figure(figsize=(14, 10))
 min_sizes = range(3, 15)
 
-# 単純エントロピーのプロット
+# 既存のラベルエントロピーのプロット
 plt.plot(min_sizes, results_by_noise['0%_noise']['simple_mean'], marker='o', linestyle='-', color='b', label='Simple Entropy (Original)')
 plt.errorbar(min_sizes, results_by_noise['10%_noise']['simple_mean'], yerr=results_by_noise['10%_noise']['simple_std'],
              marker='s', linestyle='--', color='g', label='Simple Entropy (10% Noise)', capsize=5)
@@ -262,7 +262,7 @@ plt.errorbar(min_sizes, results_by_noise['40%_noise']['simple_mean'], yerr=resul
 plt.errorbar(min_sizes, results_by_noise['50%_noise']['simple_mean'], yerr=results_by_noise['50%_noise']['simple_std'],
              marker='D', linestyle=':', color='lime', label='Simple Entropy (50% Noise)', capsize=5)
 
-# 修正NKDエントロピーのプロット
+# 提案方式のプロット
 plt.plot(min_sizes, results_by_noise['0%_noise']['modified_nkd_mean'], marker='o', linestyle='-', color='purple', label='Modified NKD Entropy (Original)')
 plt.errorbar(min_sizes, results_by_noise['10%_noise']['modified_nkd_mean'], yerr=results_by_noise['10%_noise']['modified_nkd_std'],
              marker='s', linestyle='--', color='orange', label='Modified NKD Entropy (10% Noise)', capsize=5)
