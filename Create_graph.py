@@ -5,14 +5,14 @@ from builtins import min
 '''
 def calculate_differences(file_path):
     """
-    ƒtƒ@ƒCƒ‹‚©‚ç”’l‚ğ“Ç‚İ‚İAã‚©‚ç2s‚¸‚Â·•ª‚ğŒvZ‚µA
-    â‘Î’l‚Æ’l‚Ì¬‚³‚¢•û‚ğˆê‚ÉƒŠƒXƒg‚ÉŠi”[‚µ‚Ü‚·B
+    ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æ•°å€¤ã‚’èª­ã¿è¾¼ã¿ã€ä¸Šã‹ã‚‰2è¡Œãšã¤å·®åˆ†ã‚’è¨ˆç®—ã—ã€
+    çµ¶å¯¾å€¤ã¨å€¤ã®å°ã•ã„æ–¹ã‚’ä¸€ç·’ã«ãƒªã‚¹ãƒˆã«æ ¼ç´ã™ã‚‹ã€‚
 
     Args:
-        file_path: “Ç‚İ‚Şƒtƒ@ƒCƒ‹‚ÌƒpƒX
+        file_path: èª­ã¿è¾¼ã‚€ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 
     Returns:
-        tuple: ŒvZŒ‹‰Ê‚Ìƒ^ƒvƒ‹‚ÌƒŠƒXƒg‚ÆÅ¬’l‚ÌƒŠƒXƒg‚ğŠÜ‚Şƒ^ƒvƒ‹
+        tuple: è¨ˆç®—çµæœã®ã‚¿ãƒ—ãƒ«ã®ãƒªã‚¹ãƒˆã¨æœ€å°å€¤ã®ãƒªã‚¹ãƒˆã‚’å«ã‚€ã‚¿ãƒ—ãƒ«
     """
 
     with open(file_path, 'r') as f:
@@ -33,14 +33,14 @@ def calculate_differences(file_path):
 
 def calculate_differences(file_path):
     """
-    Precision: ‚Ån‚Ü‚és‚Ì”’l‚ğ“Ç‚İ‚İAã‚©‚ç2s‚¸‚Â·•ª‚ğŒvZ‚µA
-    â‘Î’l‚Æ’l‚Ì¬‚³‚¢•û‚ğˆê‚ÉƒŠƒXƒg‚ÉŠi”[‚µ‚Ü‚·B
+    Precision: ã§å§‹ã¾ã‚‹è¡Œã®æ•°å€¤ã‚’èª­ã¿è¾¼ã¿ã€ä¸Šã‹ã‚‰2è¡Œãšã¤å·®åˆ†ã‚’è¨ˆç®—ã—ã€
+    çµ¶å¯¾å€¤ã¨å€¤ã®å°ã•ã„æ–¹ã‚’ä¸€ç·’ã«ãƒªã‚¹ãƒˆã«æ ¼ç´ã€‚
 
     Args:
-        file_path: “Ç‚İ‚Şƒtƒ@ƒCƒ‹‚ÌƒpƒX
+        file_path: èª­ã¿è¾¼ã‚€ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 
     Returns:
-        tuple: ŒvZŒ‹‰Ê‚Ìƒ^ƒvƒ‹‚ÌƒŠƒXƒg‚ÆÅ¬’l‚ÌƒŠƒXƒg‚ğŠÜ‚Şƒ^ƒvƒ‹
+        tuple: è¨ˆç®—çµæœã®ã‚¿ãƒ—ãƒ«ã®ãƒªã‚¹ãƒˆã¨æœ€å°å€¤ã®ãƒªã‚¹ãƒˆã‚’å«ã‚€ã‚¿ãƒ—ãƒ«
     """
 
     results = []
@@ -50,13 +50,13 @@ def calculate_differences(file_path):
         for line in f:
             if line.startswith("Precision: "):
                 try:
-                    # "Precision: " ‚ÌŒã‚Ì”’l‚ğ’Šo
+                    # "Precision: " ã®å¾Œã®æ•°å€¤ã‚’æŠ½å‡º
                     number = float(line.split(": ")[1])
                     numbers.append(number)
                 except ValueError:
-                    print(f"”’l‚É•ÏŠ·‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½: {line}")
+                    print(f"æ•°å€¤ã«å¤‰æ›ã§ãã¾ã›ã‚“ã§ã—ãŸ: {line}")
 
-            # 2‚ÂˆÈã‚Ì”’l‚ª’~Ï‚³‚ê‚½‚çŒvZ
+            # 2ã¤ä»¥ä¸Šã®æ•°å€¤ãŒè“„ç©ã•ã‚ŒãŸã‚‰è¨ˆç®—
             if len(numbers) >= 2:
                 num1, num2 = numbers.pop(0), numbers.pop(0)
                 diff = abs(num2 - num1)
@@ -67,10 +67,10 @@ def calculate_differences(file_path):
     return results, mins
 
 
-# ƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è
+# ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®š
 file_path = "Precision-4049.txt"
 
-# ·•ª‚ğŒvZ
+# å·®åˆ†ã‚’è¨ˆç®—
 result, min = calculate_differences(file_path)
 
 print(result)
@@ -78,15 +78,15 @@ print(len(result))
 
 def split_list_every_three(data):
   """
-  —^‚¦‚ç‚ê‚½ƒŠƒXƒg‚ğ3‚Â”ò‚Î‚µ‚Å3‚Â‚ÌƒŠƒXƒg‚É•ªŠ„B
+  ä¸ãˆã‚‰ã‚ŒãŸãƒªã‚¹ãƒˆã‚’3ã¤é£›ã°ã—ã§3ã¤ã®ãƒªã‚¹ãƒˆã«åˆ†å‰²ã€‚
   Args:
-    data: •ªŠ„‚·‚éƒŠƒXƒg
+    data: åˆ†å‰²ã™ã‚‹ãƒªã‚¹ãƒˆ
   Returns:
-    tuple: 3‚Â‚ÌƒŠƒXƒg‚ğŠÜ‚Şƒ^ƒvƒ‹ (list_a, list_b, list_c)
+    tuple: 3ã¤ã®ãƒªã‚¹ãƒˆã‚’å«ã‚€ã‚¿ãƒ—ãƒ« (list_a, list_b, list_c)
   """
 
   if len(data) < 9:
-    raise ValueError("ƒŠƒXƒg‚Ì’·‚³‚Í­‚È‚­‚Æ‚à9ˆÈã‚Å‚ ‚é•K—v")
+    raise ValueError("ãƒªã‚¹ãƒˆã®é•·ã•ã¯å°‘ãªãã¨ã‚‚9ä»¥ä¸Šã§ã‚ã‚‹å¿…è¦")
 
   list_a = data[::3]
   list_b = data[1::3]
@@ -112,7 +112,7 @@ def extract_precision_values(filename):
         precision_values.append(precision)
   return precision_values
 
-# ƒŠƒXƒg‚ğ•ªŠ„
+# ãƒªã‚¹ãƒˆã‚’åˆ†å‰²
 yerr_10_90, yerr_20_80, yerr_30_70 = split_list_every_three(result)
 
 print("yerr_10_90:", yerr_10_90)
@@ -130,23 +130,24 @@ b = center_b
 c = center_c
 #+ np.array(yerr_30_70) / 2
 
-# ƒOƒ‰ƒt‚ğ•`‰æ
+# ã‚°ãƒ©ãƒ•ã‚’æç”»
 plt.errorbar(x, a, yerr=np.array(yerr_10_90)/2, fmt='-', capsize=5,label='Initial label ratio 68.9%(90% of Abnormal / 10% of Normal')
 plt.errorbar(x, b, yerr=np.array(yerr_20_80)/2, fmt='-', capsize=5,label='Initial label ratio 64.2%(80% of Abnormal / 20% of Normal')
 plt.errorbar(x, c, yerr=np.array(yerr_30_70)/2, fmt='-', capsize=5,label='Initial label ratio 59.4%(70% of Abnormal / 30% of Normal',color=(0.5, 0.5, 0.5))
 
-# ƒOƒ‰ƒt‚Ìƒ^ƒCƒgƒ‹‚Æ²ƒ‰ƒxƒ‹
+# ã‚°ãƒ©ãƒ•ã®ã‚¿ã‚¤ãƒˆãƒ«ã¨è»¸ãƒ©ãƒ™ãƒ«
 plt.title('Precision with different label noise ratio (Herlev)')
 plt.xlabel('Label noise ratio')
 plt.ylabel('Precision')
 
-# –}—á‚ğ•\¦
+# å‡¡ä¾‹ã‚’è¡¨ç¤º
 plt.legend()
 plt.ylim(0.0, 1.01)
 
-# ƒOƒŠƒbƒh‚ğ•\¦
+# ã‚°ãƒªãƒƒãƒ‰ã‚’è¡¨ç¤º
 plt.grid(True)
 
-# ƒOƒ‰ƒt‚ğ•\¦
+# ã‚°ãƒ©ãƒ•ã‚’è¡¨ç¤º
 plt.show()
+
 
