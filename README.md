@@ -2,10 +2,10 @@
 Transformed label propagation algorithm with Herlev, SIPaKMeD, and Cytology dataset.
 This result is discussed in the following thesis.
 
-- (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Graph-based Annotation Reliability Estimation in Cervical Cytology," Proc. of IEEE Advanced Machine Leaning and Data Science, July 2025.
-- (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Unsupervised Learning with Label Commonization for Uncovering Low-quality Annotation Search,"  Proc. of IEEE Advanced Machine Leaning and Data Science, July 2025 
 - (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Label Entropy with Similarity Graph Clique for Assessing Annotation Quality,"
      Proc. of International Conference on Industry 4.0 – Management Challenges, Digital Trends, and the Application of Artificial Intelligence, pp.259-270, March 28th 2025.
+- (Accepted) Y. Iida, B. Mrazovac and Y. Ishigure, "Graph-based Annotation Reliability Estimation in Cervical Cytology," 2025 International Conference on Advanced Machine Learning and Data Science (AMLDS), Tokyo, Japan, 2025, pp. 404-410, doi: 10.1109/AMLDS63918.2025.11159459. keywords: {Training;Pathology;Annotations;Noise;Estimation;Machine learning;Entropy;Data models;Reliability;Biomedical imaging;label propagation;label entropy;cervical cytology},
+- (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Unsupervised Learning with Label Commonization for Uncovering Low-quality Annotation Search,"  Proc. of IEEE Advanced Machine Leaning and Data Science, July 2025 
 - (Accepted) Yasuhiro IIDA, Bojan Mrazovac, and Yasuo Ishigure, "Graph-based Similarity Search for Robust Annotation in Cervical Cytology," Proc. of IEEE Advanced Machine Leaning and Data Science, July 2025 
 - (Accepted)Yasuhiro IIDA, Bojan Mrazovac, Yasuo Ishigure, Ikuma Sato, and Ayahiko Niimi, "Unreliabile Annotation Detection with Similarity Graph," Proc. of IEEE IMSA, July 2025.
 - (Accepted)Yasuhiro IIDA, Bojan Mrazovac, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Graph-based Algrithm for Detecting Label Noise in Cervical Cytology Images," IEEE ICITA Oct. 2025.
