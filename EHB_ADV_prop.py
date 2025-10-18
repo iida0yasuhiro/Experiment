@@ -1,11 +1,11 @@
-# ššš@’ñˆÄè–@BŠm—¦•ª•z‚Ì‚Ü‚Üƒ‰ƒxƒ‹“`”d‚ÉƒCƒ“ƒvƒbƒg
-# ÀŒ±‚Q@–{ÀŒ±@11l‚Ì¬“¯s—ñ‚É‚æ‚é•â³‚ ‚èE‚È‚µ‚Å”äŠrB‚Ç‚¿‚ç‚àŠm—¦•ª•z‚Ì‚Ü‚Ü
-# K=1 35.41, 33.80, 33.54 (•â³‚È‚µ)
-# K=1 34.77, 32.49, 34.27 (•â³‚ ‚è)
-# K=2 50.27, 42.25, 53.39 (•â³‚È‚µ)
-# K=2 76.90, 71.25, 75.75 (•â³‚ ‚è)
-# K=3 79.38, 69.92, 68.88 (•â³‚È‚µ)
-# K=3 88.63, 93.01, 89.05 (•â³‚ ‚è)
+# â˜…â˜…â˜…ã€€ææ¡ˆæ‰‹æ³•ã€‚ç¢ºç‡åˆ†å¸ƒã®ã¾ã¾ãƒ©ãƒ™ãƒ«ä¼æ’­ã«ã‚¤ãƒ³ãƒ—ãƒƒãƒˆ
+# å®Ÿé¨“ï¼’ã€€æœ¬å®Ÿé¨“ã€€11äººã®æ··åŒè¡Œåˆ—ã«ã‚ˆã‚‹è£œæ­£ã‚ã‚Šãƒ»ãªã—ã§æ¯”è¼ƒã€‚ã©ã¡ã‚‰ã‚‚ç¢ºç‡åˆ†å¸ƒã®ã¾ã¾ã€‚10å›å†å®Ÿé¨“ã€‚
+# K=1 35.41, 33.80, 33.54, 37.26, 35.80, 35.04, 33.07, 33.23, 34.22, 32.65 (è£œæ­£ãªã—)
+# K=1 34.77, 32.49, 34.27, 35.22, 32.81, 33.60, 31.96, 33.70, 31.41, 31.87 (è£œæ­£ã‚ã‚Š)
+# K=2 50.27, 42.25, 53.39, 45.57, 45.81, 50.55, 46.47, 43.17, 41.40, 43.51 (è£œæ­£ãªã—)
+# K=2 76.90, 71.25, 75.75, 72.94, 74.68, 72.05, 77.22, 73.08, 76.83, 71.67 (è£œæ­£ã‚ã‚Š)
+# K=3 79.38, 69.92, 68.88, 70.89, 74.88, 67.19, 66.56, 70.08, 71.25, 66.19 (è£œæ­£ãªã—)
+# K=3 88.63, 93.01, 89.05, 91.46, 91.52, 89.64, 89.56, 88.91. 86.10, 89.03 (è£œæ­£ã‚ã‚Š)
 import numpy as np
 import json
 from sklearn.metrics.pairwise import cosine_similarity
@@ -23,17 +23,17 @@ RANDOM_SEED = None
 
 def build_graph(features, similarity_threshold):
     """
-    “Á’¥ƒxƒNƒgƒ‹‚©‚çƒRƒTƒCƒ“—Ş—“x‚ÉŠî‚Ã‚¢‚Äd‚İs—ñW‚ğ\’z‚·‚éB
+    ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«ã‹ã‚‰ã‚³ã‚µã‚¤ãƒ³é¡ä¼¼åº¦ã«åŸºã¥ã„ã¦é‡ã¿è¡Œåˆ—Wã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
     """
-    print("ƒRƒTƒCƒ“—Ş—“x‚ğŒvZ’†...")
+    print("ã‚³ã‚µã‚¤ãƒ³é¡ä¼¼åº¦ã‚’è¨ˆç®—ä¸­...")
     similarity_matrix = cosine_similarity(features)
-    print("d‚İs—ñW‚ğ\’z’†...")
+    print("é‡ã¿è¡Œåˆ—Wã‚’æ§‹ç¯‰ä¸­...")
     W = similarity_matrix * (similarity_matrix >= similarity_threshold)
     return W
 
 def get_true_labels(file_names):
     """
-    ƒtƒ@ƒCƒ‹–¼‚©‚ç^‚Ìƒ‰ƒxƒ‹i”’lj‚ğæ“¾‚·‚éB
+    ãƒ•ã‚¡ã‚¤ãƒ«åã‹ã‚‰çœŸã®ãƒ©ãƒ™ãƒ«ï¼ˆæ•°å€¤ï¼‰ã‚’å–å¾—ã™ã‚‹ã€‚
     """
     true_label_map = {'NILM': 0, 'ASC-US': 1, 'LSIL': 2, 'ASC-H': 3, 'HSIL': 4, 'SCC': 5}
     label_mapping = {
@@ -50,9 +50,9 @@ def get_true_labels(file_names):
 
 def label_propagation(Y0, W, max_iter, tolerance):
     """
-    ƒ‰ƒxƒ‹“`”dƒAƒ‹ƒSƒŠƒYƒ€‚ğÀs‚·‚éB
+    ãƒ©ãƒ™ãƒ«ä¼æ’­ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
     """
-    print("ƒ‰ƒxƒ‹“`”d‚ğŠJn‚µ‚Ü‚·...")
+    print("ãƒ©ãƒ™ãƒ«ä¼æ’­ã‚’é–‹å§‹ã—ã¾ã™...")
     D = np.diag(np.sum(W, axis=1))
     D_inv_sqrt = np.linalg.inv(np.sqrt(D + 1e-12))
     S = D_inv_sqrt @ W @ D_inv_sqrt
@@ -61,30 +61,30 @@ def label_propagation(Y0, W, max_iter, tolerance):
         Y_prev = Y.copy()
         Y = ALPHA * S @ Y + (1 - ALPHA) * Y0
         if np.linalg.norm(Y - Y_prev) < tolerance:
-            print(f"û‘©‚µ‚Ü‚µ‚½B”½•œ‰ñ”: {i+1}")
+            print(f"åæŸã—ã¾ã—ãŸã€‚åå¾©å›æ•°: {i+1}")
             break
         if (i + 1) % 10 == 0:
-            print(f"”½•œ‰ñ”: {i+1}/{max_iter}")
+            print(f"åå¾©å›æ•°: {i+1}/{max_iter}")
     else:
-        print(f"Å‘å”½•œ‰ñ”‚É’B‚µ‚Ü‚µ‚½B”½•œ‰ñ”: {max_iter}")
+        print(f"æœ€å¤§åå¾©å›æ•°ã«é”ã—ã¾ã—ãŸã€‚åå¾©å›æ•°: {max_iter}")
     sum_Y = Y.sum(axis=1, keepdims=True)
     Y = np.divide(Y, sum_Y, out=np.zeros_like(Y), where=sum_Y != 0)
     return Y
 
 def apply_confusion_matrix_correction(Y_final, confusion_matrix):
     """
-    ƒAƒmƒe[ƒ^‚Ì¬“¯s—ñ‚ğg‚Á‚ÄAƒ‰ƒxƒ‹“`”d‚ÌÅIŒ‹‰Ê‚ğ•â³‚·‚é
+    ã‚¢ãƒãƒ†ãƒ¼ã‚¿ã®æ··åŒè¡Œåˆ—ã‚’ä½¿ã£ã¦ã€ãƒ©ãƒ™ãƒ«ä¼æ’­ã®æœ€çµ‚çµæœã‚’è£œæ­£ã™ã‚‹
     """
-    print("¬“¯s—ñ‚É‚æ‚éƒ‰ƒxƒ‹ƒXƒRƒA‚Ì•â³‚ğŠJn‚µ‚Ü‚·...")
+    print("æ··åŒè¡Œåˆ—ã«ã‚ˆã‚‹ãƒ©ãƒ™ãƒ«ã‚¹ã‚³ã‚¢ã®è£œæ­£ã‚’é–‹å§‹ã—ã¾ã™...")
     conf_matrix_prob = confusion_matrix / 100
     Y_updated = np.dot(Y_final, conf_matrix_prob)
     Y_updated = Y_updated / Y_updated.sum(axis=1, keepdims=True)
-    print("•â³‚ªŠ®—¹‚µ‚Ü‚µ‚½B")
+    print("è£œæ­£ãŒå®Œäº†ã—ã¾ã—ãŸã€‚")
     return Y_updated
 
 def write_results(filename, num_nodes, file_names, true_labels, Y_result, unselected_fnames, title):
     """
-    Œ‹‰Ê‚ğƒtƒ@ƒCƒ‹‚É‘‚«‚Ş‹¤’ÊŠÖ”
+    çµæœã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€å…±é€šé–¢æ•°
     """
     true_label_map = {'NILM': 0, 'ASC-US': 1, 'LSIL': 2, 'ASC-H': 3, 'HSIL': 4, 'SCC': 5}
     true_label_map_rev = {v: k for k, v in true_label_map.items()}
@@ -92,17 +92,17 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
 
     with open(filename, "w", encoding="utf-8") as f:
         f.write(f"--- {title} ---\n")
-        f.write(f"Às‚³‚ê‚½ƒm[ƒh”: {num_nodes}\n\n")
-        f.write(f"{'ƒtƒ@ƒCƒ‹–¼':<20}{'^‚Ìƒ‰ƒxƒ‹':<15}{'—\‘ªƒ‰ƒxƒ‹':<15}{'ÅIƒ‰ƒxƒ‹•ª•zƒxƒNƒgƒ‹ (Šm—¦)':<}\n")
+        f.write(f"å®Ÿè¡Œã•ã‚ŒãŸãƒãƒ¼ãƒ‰æ•°: {num_nodes}\n\n")
+        f.write(f"{'ãƒ•ã‚¡ã‚¤ãƒ«å':<20}{'çœŸã®ãƒ©ãƒ™ãƒ«':<15}{'äºˆæ¸¬ãƒ©ãƒ™ãƒ«':<15}{'æœ€çµ‚ãƒ©ãƒ™ãƒ«åˆ†å¸ƒãƒ™ã‚¯ãƒˆãƒ« (ç¢ºç‡)':<}\n")
         f.write("-" * 100 + "\n")
         for i, fname in enumerate(file_names):
             true_label_name = true_label_map_rev.get(true_labels[i], 'Unknown')
             predicted_label_name = true_label_map_rev.get(predicted_labels[i], 'Unknown')
             f.write(f"{fname:<20}{true_label_name:<15}{predicted_label_name:<15}{np.round(Y_result[i], 4)}\n")
 
-    print(f"Œ‹‰Ê‚ğ '{filename}' ‚É‘‚«‚İ‚Ü‚µ‚½B4•bŠÔ‘Ò‹@‚µ‚Ü‚·...")
+    print(f"çµæœã‚’ '{filename}' ã«æ›¸ãè¾¼ã¿ã¾ã—ãŸã€‚4ç§’é–“å¾…æ©Ÿã—ã¾ã™...")
     time.sleep(4)
-    print("‘Ò‹@Š®—¹B")
+    print("å¾…æ©Ÿå®Œäº†ã€‚")
 
     with open(filename, "a", encoding="utf-8") as f:
         correct_predictions = 0
@@ -126,31 +126,31 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
             })
         accuracy = (correct_predictions / total_unselected_nodes) * 100 if total_unselected_nodes > 0 else 0
         f.write("\n" + "=" * 50 + "\n")
-        f.write("--- ‘I‘ğ‚µ‚È‚©‚Á‚½ƒm[ƒh‚Ì—\‘ª¸“x (ƒgƒbƒvK) ---\n")
-        f.write(f"ƒgƒbƒvK‚Ì”: {TOP_K}\n")
-        f.write(f"•]‰¿‘ÎÛƒm[ƒh”: {total_unselected_nodes}\n")
-        f.write(f"³‰ğƒm[ƒh”: {correct_predictions}\n")
-        f.write(f"¸“x: {accuracy:.2f}%\n")
-        f.write("\n--- ‘I‘ğ‚µ‚È‚©‚Á‚½ƒm[ƒh‚ÌÚ×Œ‹‰Ê ---\n")
+        f.write("--- é¸æŠã—ãªã‹ã£ãŸãƒãƒ¼ãƒ‰ã®äºˆæ¸¬ç²¾åº¦ (ãƒˆãƒƒãƒ—K) ---\n")
+        f.write(f"ãƒˆãƒƒãƒ—Kã®æ•°: {TOP_K}\n")
+        f.write(f"è©•ä¾¡å¯¾è±¡ãƒãƒ¼ãƒ‰æ•°: {total_unselected_nodes}\n")
+        f.write(f"æ­£è§£ãƒãƒ¼ãƒ‰æ•°: {correct_predictions}\n")
+        f.write(f"ç²¾åº¦: {accuracy:.2f}%\n")
+        f.write("\n--- é¸æŠã—ãªã‹ã£ãŸãƒãƒ¼ãƒ‰ã®è©³ç´°çµæœ ---\n")
         for result in unselected_results_output:
-            f.write(f"ƒtƒ@ƒCƒ‹–¼: {result['fname']}\n")
-            f.write(f"  ^‚Ìƒ‰ƒxƒ‹: {result['true_label']}\n")
-            f.write(f"  —\‘ªƒgƒbƒvKƒ‰ƒxƒ‹: {result['predicted_top_k_labels']}\n")
-            f.write(f"  ÅIŠm—¦ƒxƒNƒgƒ‹: {result['probability_vector']}\n")
+            f.write(f"ãƒ•ã‚¡ã‚¤ãƒ«å: {result['fname']}\n")
+            f.write(f"  çœŸã®ãƒ©ãƒ™ãƒ«: {result['true_label']}\n")
+            f.write(f"  äºˆæ¸¬ãƒˆãƒƒãƒ—Kãƒ©ãƒ™ãƒ«: {result['predicted_top_k_labels']}\n")
+            f.write(f"  æœ€çµ‚ç¢ºç‡ãƒ™ã‚¯ãƒˆãƒ«: {result['probability_vector']}\n")
             f.write("-" * 50 + "\n")
-    print(f"Œ‹‰Ê‚ª '{filename}' ‚É‘‚«‚Ü‚ê‚Ü‚µ‚½B")
-    print(f"‘I‘ğ‚µ‚È‚©‚Á‚½ƒm[ƒh‚Ì—\‘ª¸“x: {accuracy:.2f}%")
+    print(f"çµæœãŒ '{filename}' ã«æ›¸ãè¾¼ã¾ã‚Œã¾ã—ãŸã€‚")
+    print(f"é¸æŠã—ãªã‹ã£ãŸãƒãƒ¼ãƒ‰ã®äºˆæ¸¬ç²¾åº¦: {accuracy:.2f}%")
 
 def main():
     random.seed(RANDOM_SEED)
 
-    # --- ƒf[ƒ^‚Ì“Ç‚İ‚İ ---
-    print("SM-official.json‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚İ’†...")
+    # --- ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿ ---
+    print("SM-official.jsonã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿ä¸­...")
     try:
         with open('SM-official.json', 'r', encoding='utf-8') as f:
             sm_official_data_json = json.load(f)
     except FileNotFoundError:
-        print("ƒGƒ‰[: 'SM-official.json'ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB")
+        print("ã‚¨ãƒ©ãƒ¼: 'SM-official.json'ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚")
         return
     sm_official_data = {}
     for key, value in sm_official_data_json.items():
@@ -159,21 +159,21 @@ def main():
     file_names = list(sm_official_data.keys())
     features = np.array(list(sm_official_data.values()))
     num_nodes = len(file_names)
-    print(f"ƒm[ƒh”: {num_nodes}")
+    print(f"ãƒãƒ¼ãƒ‰æ•°: {num_nodes}")
 
-    # error_distribution_vectors.txt‚Ì“Ç‚İ‚İ
+    # error_distribution_vectors.txtã®èª­ã¿è¾¼ã¿
     all_initial_labels = {}
     with open('error_distribution_vectors.txt', 'r', encoding='utf-8') as f:
         lines = f.readlines()
         for i in range(len(lines)):
-            if lines[i].startswith("ƒm[ƒhiƒtƒ@ƒCƒ‹j:"):
+            if lines[i].startswith("ãƒãƒ¼ãƒ‰ï¼ˆãƒ•ã‚¡ã‚¤ãƒ«ï¼‰:"):
                 fname_with_hyphen = lines[i].split(': ')[1].strip()
                 fname_without_hyphen = fname_with_hyphen.replace('-', '') + '.jpg'
                 vector_str = lines[i+1].split('[')[1].split(']')[0]
                 vector = np.fromstring(vector_str, sep=' ')
                 all_initial_labels[fname_without_hyphen] = vector
 
-    # --- ¬“¯s—ñ‚Ì’è‹` ---
+    # --- æ··åŒè¡Œåˆ—ã®å®šç¾© ---
     confusion_matrix_from_image = np.array([
         [67.5, 23.4, 8.4, 0.6, 0.0, 0.0],
         [1.4, 15.8, 19.2, 13.7, 37.7, 12.3],
@@ -183,39 +183,40 @@ def main():
         [0.8, 6.7, 5.1, 16.2, 39.9, 31.2]
     ])
 
-    # --- 15-50%‚Ìƒm[ƒh‚ğƒ‰ƒ“ƒ_ƒ€‚É‘I‘ğ ---
+    # --- 15-50%ã®ãƒãƒ¼ãƒ‰ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«é¸æŠ ---
     initial_label_fnames = list(all_initial_labels.keys())
     random.shuffle(initial_label_fnames)
     num_initial_labels = int(len(initial_label_fnames) * INITIAL_LABEL_RATIO)
     selected_initial_fnames = set(initial_label_fnames[:num_initial_labels])
     unselected_fnames = set(initial_label_fnames[num_initial_labels:])
 
-    # --- ƒOƒ‰ƒt‚Ì\’z ---
+    # --- ã‚°ãƒ©ãƒ•ã®æ§‹ç¯‰ ---
     W = build_graph(features, SIMILARITY_THRESHOLD)
 
-    # --- ‰Šúƒ‰ƒxƒ‹s—ñ Y0 ‚Ìì¬iŒ³‚Ì6ŸŒ³ƒxƒNƒgƒ‹‚ğg—pj ---
+    # --- åˆæœŸãƒ©ãƒ™ãƒ«è¡Œåˆ— Y0 ã®ä½œæˆï¼ˆå…ƒã®6æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«ã‚’ä½¿ç”¨ï¼‰ ---
     Y0 = np.zeros((num_nodes, 6))
     for i, fname in enumerate(file_names):
         if fname in selected_initial_fnames:
-            # •ÏX“_: one-hotƒxƒNƒgƒ‹‚Å‚Í‚È‚­AŒ³‚ÌƒxƒNƒgƒ‹‚ğ‚»‚Ì‚Ü‚Üg—p
+            # å¤‰æ›´ç‚¹: one-hotãƒ™ã‚¯ãƒˆãƒ«ã§ã¯ãªãã€å…ƒã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’ãã®ã¾ã¾ä½¿ç”¨
             Y0[i] = all_initial_labels[fname]
 
-    # ³‹K‰»
+    # æ­£è¦åŒ–
     sum_Y0 = Y0.sum(axis=1, keepdims=True)
     Y0 = np.divide(Y0, sum_Y0, out=np.zeros_like(Y0), where=sum_Y0 != 0)
 
-    # --- ƒ‰ƒxƒ‹“`”d‚ÌÀs ---
+    # --- ãƒ©ãƒ™ãƒ«ä¼æ’­ã®å®Ÿè¡Œ ---
     Y_final = label_propagation(Y0, W, MAX_ITER, TOLERANCE)
 
-    # --- Œ‹‰Ê‚Ì•]‰¿‚Æo—Íi•â³‚È‚µj ---
+    # --- çµæœã®è©•ä¾¡ã¨å‡ºåŠ›ï¼ˆè£œæ­£ãªã—ï¼‰ ---
     true_labels = get_true_labels(file_names)
-    write_results("results_no_correction.txt", num_nodes, file_names, true_labels, Y_final, unselected_fnames, "¬“¯s—ñ‚É‚æ‚é•â³‚È‚µ‚ÌÅIŒ‹‰Ê")
+    write_results("results_no_correction.txt", num_nodes, file_names, true_labels, Y_final, unselected_fnames, "æ··åŒè¡Œåˆ—ã«ã‚ˆã‚‹è£œæ­£ãªã—ã®æœ€çµ‚çµæœ")
 
-    # --- ’ñˆÄƒAƒ‹ƒSƒŠƒYƒ€‚Ì“K—p ---
+    # --- ææ¡ˆã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã®é©ç”¨ ---
     Y_corrected = apply_confusion_matrix_correction(Y_final, confusion_matrix_from_image)
 
-    # --- Œ‹‰Ê‚Ì•]‰¿‚Æo—Íi•â³‚ ‚èj ---
-    write_results("results_with_correction.txt", num_nodes, file_names, true_labels, Y_corrected, unselected_fnames, "¬“¯s—ñ‚É‚æ‚é•â³‚ ‚è‚ÌÅIŒ‹‰Ê")
+    # --- çµæœã®è©•ä¾¡ã¨å‡ºåŠ›ï¼ˆè£œæ­£ã‚ã‚Šï¼‰ ---
+    write_results("results_with_correction.txt", num_nodes, file_names, true_labels, Y_corrected, unselected_fnames, "æ··åŒè¡Œåˆ—ã«ã‚ˆã‚‹è£œæ­£ã‚ã‚Šã®æœ€çµ‚çµæœ")
 
 if __name__ == "__main__":
+
     main()
