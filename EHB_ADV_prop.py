@@ -52,7 +52,7 @@ def label_propagation(Y0, W, max_iter, tolerance):
     """
     ラベル伝播アルゴリズムを実行する。
     """
-    print("ラベル伝播を開始します...")
+    print("ラベル伝播を開始")
     D = np.diag(np.sum(W, axis=1))
     D_inv_sqrt = np.linalg.inv(np.sqrt(D + 1e-12))
     S = D_inv_sqrt @ W @ D_inv_sqrt
@@ -66,7 +66,7 @@ def label_propagation(Y0, W, max_iter, tolerance):
         if (i + 1) % 10 == 0:
             print(f"反復回数: {i+1}/{max_iter}")
     else:
-        print(f"最大反復回数に達しました。反復回数: {max_iter}")
+        print(f"最大反復回数に達した。反復回数: {max_iter}")
     sum_Y = Y.sum(axis=1, keepdims=True)
     Y = np.divide(Y, sum_Y, out=np.zeros_like(Y), where=sum_Y != 0)
     return Y
@@ -100,7 +100,7 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
             predicted_label_name = true_label_map_rev.get(predicted_labels[i], 'Unknown')
             f.write(f"{fname:<20}{true_label_name:<15}{predicted_label_name:<15}{np.round(Y_result[i], 4)}\n")
 
-    print(f"結果を '{filename}' に書き込みました。4秒間待機します...")
+    print(f"結果を '{filename}' に書き込み。4秒間待機...")
     time.sleep(4)
     print("待機完了。")
 
@@ -138,7 +138,7 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
             f.write(f"  予測トップKラベル: {result['predicted_top_k_labels']}\n")
             f.write(f"  最終確率ベクトル: {result['probability_vector']}\n")
             f.write("-" * 50 + "\n")
-    print(f"結果が '{filename}' に書き込まれました。")
+    print(f"結果が '{filename}' に書き込み。")
     print(f"選択しなかったノードの予測精度: {accuracy:.2f}%")
 
 def main():
@@ -220,4 +220,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
