@@ -51,7 +51,7 @@ def label_propagation(Y0, W, max_iter, tolerance):
     """
     ラベル伝播アルゴリズムを実行する。
     """
-    print("ラベル伝播を開始します...")
+    print("ラベル伝播を開始")
     D = np.diag(np.sum(W, axis=1))
     D_inv_sqrt = np.linalg.inv(np.sqrt(D + 1e-12))
     S = D_inv_sqrt @ W @ D_inv_sqrt
@@ -60,7 +60,7 @@ def label_propagation(Y0, W, max_iter, tolerance):
         Y_prev = Y.copy()
         Y = ALPHA * S @ Y + (1 - ALPHA) * Y0
         if np.linalg.norm(Y - Y_prev) < tolerance:
-            print(f"収束しました。反復回数: {i+1}")
+            print(f"収束した。反復回数: {i+1}")
             break
         if (i + 1) % 10 == 0:
             print(f"反復回数: {i+1}/{max_iter}")
@@ -74,7 +74,7 @@ def apply_confusion_matrix_correction(Y_final, confusion_matrix):
     """
     アノテータの混同行列を使って、ラベル伝播の最終結果を補正する
     """
-    print("混同行列によるラベルスコアの補正を開始します...")
+    print("混同行列によるラベルスコアの補正を開始")
     conf_matrix_prob = confusion_matrix / 100
     Y_updated = np.dot(Y_final, conf_matrix_prob)
     Y_updated = Y_updated / Y_updated.sum(axis=1, keepdims=True)
@@ -99,7 +99,7 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
             predicted_label_name = true_label_map_rev.get(predicted_labels[i], 'Unknown')
             f.write(f"{fname:<20}{true_label_name:<15}{predicted_label_name:<15}{np.round(Y_result[i], 4)}\n")
 
-    print(f"結果を '{filename}' に書き込みました。4秒間待機します...")
+    print(f"結果を '{filename}' に書き込み。4秒間待機")
     time.sleep(4)
     print("待機完了。")
 
@@ -137,7 +137,7 @@ def write_results(filename, num_nodes, file_names, true_labels, Y_result, unsele
             f.write(f"  予測トップKラベル: {result['predicted_top_k_labels']}\n")
             f.write(f"  最終確率ベクトル: {result['probability_vector']}\n")
             f.write("-" * 50 + "\n")
-    print(f"結果が '{filename}' に書き込まれました。")
+    print(f"結果が '{filename}' に書き込み。")
     print(f"選択しなかったノードの予測精度: {accuracy:.2f}%")
 
 def main():
@@ -149,7 +149,7 @@ def main():
         with open('SM-official.json', 'r', encoding='utf-8') as f:
             sm_official_data_json = json.load(f)
     except FileNotFoundError:
-        print("エラー: 'SM-official.json'ファイルが見つかりません。")
+        print("エラー: 'SM-official.json'ファイルが見つからない。")
         return
     sm_official_data = {}
     for key, value in sm_official_data_json.items():
@@ -218,3 +218,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
