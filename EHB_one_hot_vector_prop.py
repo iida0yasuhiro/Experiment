@@ -78,7 +78,7 @@ def apply_confusion_matrix_correction(Y_final, confusion_matrix):
     conf_matrix_prob = confusion_matrix / 100
     Y_updated = np.dot(Y_final, conf_matrix_prob)
     Y_updated = Y_updated / Y_updated.sum(axis=1, keepdims=True)
-    print("補正が完了しました。")
+    print("補正完了。")
     return Y_updated
 
 def write_results(filename, num_nodes, file_names, true_labels, Y_result, unselected_fnames, title):
@@ -218,4 +218,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
