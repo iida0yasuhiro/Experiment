@@ -11,7 +11,7 @@ This result is discussed in the following thesis.
 - (Accepted)Yasuhiro IIDA, Bojan Mrazovac, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Graph-based Algrithm for Detecting Label Noise in Cervical Cytology Images," IEEE ICITA Oct. 2025.
 - (Accepted)Yasuhiro IIDA, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Label Propagation for Identifying Noisy Labels in Cervical Cytology," IEEE BIOMDLORE Oct. 2025.
 - (Accepted)Yasuhiro IIDA, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Estimating True Labels from Highly Noisy Real-world Data in Cervical Cytology," IEEE EHB November. 2025.
-- (Accepted)Yasuhiro IIDA, Bojan Mrazovac, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Robust Metric for the Labeling Quality of the Cervical Cytology Similarity Graph," IEEE Telfor November. 2025.
+- (Accepted)Y. Iida, B. Mrazovac, Y. Ishigure, T. Mariya, I. Sato and A. Niimi, "Robust Metric for the Labeling Quality of the Cervical Cytology Similarity Graph," 2025 33rd Telecommunications Forum (TELFOR), Belgrade, Serbia, 2025, pp. 1-4, doi: 10.1109/TELFOR67910.2025.11314340..
 - (Accepted)Yasuhiro IIDA, Bojan Mrazovac, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Graph-Based Algorithm for Label Noise Detection and Correction in Cervical Cytology," IEEE ICAHS. December 2025.
   
 Full Paper of each research will be uploaded only if it complies with each conference stipulations.
