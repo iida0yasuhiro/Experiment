@@ -269,11 +269,11 @@ if __name__ == "__main__":
     image_ids_t = torch.LongTensor(image_ids)
 
     #  n_chunks=8 → chunk_dim=96（=768/8）は12ヘッドで割り切れる（96/12=8）
-    # n_layers=4 → Q-Formerを4層積み重ねる（論文は通常12層だが、
+    # n_layers → Q-Formerを12層で実験
 
     N_CHUNKS = 8
     N_HEADS_CROSS = 12
-    N_LAYERS = 4
+    N_LAYERS = 12
 
     model = QuMABModel(num_annotators, feature_dim, num_classes,
                         n_chunks=N_CHUNKS, n_heads_cross=N_HEADS_CROSS, n_layers=N_LAYERS)
