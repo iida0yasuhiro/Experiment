@@ -100,10 +100,10 @@ class QuMABModel(nn.Module):
                  n_heads_self=4, n_chunks=8, n_heads_cross=12, n_layers=12, dropout=0.2):
         super().__init__()
         assert feature_dim % n_chunks == 0, \
-            f"feature_dim({feature_dim})はn_chunks({n_chunks})で割り切れる必要があります"
+            f"feature_dim({feature_dim})はn_chunks({n_chunks})で割り切れないといけない"
         chunk_dim = feature_dim // n_chunks
         assert chunk_dim % n_heads_cross == 0, \
-            f"chunk_dim({chunk_dim})はn_heads_cross({n_heads_cross})で割り切れる必要があります"
+            f"chunk_dim({chunk_dim})はn_heads_cross({n_heads_cross})で割り切ないといけない"
 
         self.num_annotators = num_annotators
         self.feature_dim = feature_dim
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     print(f"      -> FFN] × {N_LAYERS}層 + Annotator別Classifierを実装")
     print("   空間的な位置情報（画像のどこを見たか）は再現できないが、")
     print("      Cross-Attention機構自体（マルチヘッドの複数トークンへの選択的重み付け）と")
-    print("      Q-Formerの多層構造は機能的に忠実に再現")
+    print("      Q-Formerの多層構造を再現した")
     print("=" * 88)
     print(df.to_string(index=False, na_rep='N/A', float_format=lambda x: f"{x:.3f}"))
     print("-" * 88)
