@@ -13,7 +13,7 @@ from scipy.stats import pointbiserialr, entropy
 SEED = 0
 NUM_TRIALS = 20
 threshold = 0.8
-alpha_val = 0.2
+alpha_val = 0.8
 epsilon = 0.001
 #W_ATTEN = 9.5  # GEMINI-b_weight ópÇ…à€éù
 
