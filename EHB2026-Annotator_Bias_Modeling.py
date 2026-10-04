@@ -1,4 +1,4 @@
-# ’ñˆÄè–@@ƒAƒmƒe[ƒ^ƒoƒCƒAƒXƒ‚ƒfƒ‹@7Œ5“úì¬A7Œ18“úXV
+# ææ¡ˆæ‰‹æ³•ã€€ã‚¢ãƒãƒ†ãƒ¼ã‚¿ãƒã‚¤ã‚¢ã‚¹ãƒ¢ãƒ‡ãƒ«ã€€7æœˆ5æ—¥ä½œæˆã€7æœˆ18æ—¥æ›´æ–°
 import os
 import json
 import ast
@@ -58,7 +58,7 @@ def compute_graph_laplacian(X, knn=5):
     return L, W
 
 def estimate_biases_graph(X, ann_ids, image_ids, decisions, L, num_classes=6):
-    print("\n[PyMC] ƒOƒ‰ƒt³‘¥‰»‚ ‚è ‚Ì•Ï•ª„˜_ (30,000 steps) ---")
+    print("\n[PyMC] ã‚°ãƒ©ãƒ•æ­£å‰‡åŒ–ã‚ã‚Š ã®å¤‰åˆ†æ¨è«– (30,000 steps) ---")
     num_annotators = len(np.unique(ann_ids))
     num_features = X.shape[1]
     num_images = X.shape[0]
@@ -82,7 +82,7 @@ def estimate_biases_graph(X, ann_ids, image_ids, decisions, L, num_classes=6):
             trace.posterior['graph_smoothness'].mean(dim=['chain', 'draw']).values)
 
 def estimate_biases_no_graph(X, ann_ids, image_ids, decisions, num_classes=6):
-    print("\n[PyMC] ƒOƒ‰ƒt³‘¥‰»‚È‚µ‚Ì•Ï•ª„˜_ (30,000 steps) ")
+    print("\n[PyMC] ã‚°ãƒ©ãƒ•æ­£å‰‡åŒ–ãªã—ã®å¤‰åˆ†æ¨è«– (30,000 steps) ")
     num_annotators = len(np.unique(ann_ids))
     num_features = X.shape[1]
 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     comparison_results = []
 
-    print("\n•]‰¿Fs‚²‚Æ¬“¯s—ñ‚ÌEMD & JSD‚ğZo")
+    print("\nè©•ä¾¡ï¼šè¡Œã”ã¨æ··åŒè¡Œåˆ—ã®EMD & JSDã‚’ç®—å‡º")
     for i in range(num_annotators):
         g_preds = np.zeros(num_images, dtype=int)
         ng_preds = np.zeros(num_images, dtype=int)
@@ -184,17 +184,17 @@ if __name__ == "__main__":
     cols = ['Annotator', 'GG_EMD', 'GG_JSD', 'GNG_EMD', 'GNG_JSD']
 
     print("\n" + "="*125)
-    print("  y˜_•¶ÀŒ±—pF2è–@•ª•z‹ß—¸“x•]‰¿Œ‹‰Êz")
+    print("  ã€è«–æ–‡å®Ÿé¨“ç”¨ï¼š2æ‰‹æ³•åˆ†å¸ƒè¿‘ä¼¼ç²¾åº¦è©•ä¾¡çµæœã€‘")
     print("   GG: GEMINI(Graph) | GNG: GEMINI(No-Graph)")
-    print("   EMDAJSD ‚Æ‚à‚ÉA’l‚ª’á‚¢‚Ù‚Ç‚æ‚¢")
+    print("   EMDã€JSD ã¨ã‚‚ã«ã€å€¤ãŒä½ã„ã»ã©ã‚ˆã„")
     print("="*125)
     print(df_comp[cols].to_string(index=False, formatters={c: lambda x: f"{x:.3f}" for c in cols if c != 'Annotator'}))
     print("-"*125)
 
-    print(f"y‘S‘Ì•½‹Ïz GEMINI_G  (ƒOƒ‰ƒt‚ ‚è) -> CM_EMD: {df_comp['GG_EMD'].mean():.3f} | CM_JSD: {df_comp['GG_JSD'].mean():.3f}")
-    print(f"y‘S‘Ì•½‹Ïz GEMINI_NG (ƒOƒ‰ƒt‚È‚µ) -> CM_EMD: {df_comp['GNG_EMD'].mean():.3f} | CM_JSD: {df_comp['GNG_JSD'].mean():.3f}")
+    print(f"ã€å…¨ä½“å¹³å‡ã€‘ GEMINI_G  (ã‚°ãƒ©ãƒ•ã‚ã‚Š) -> CM_EMD: {df_comp['GG_EMD'].mean():.3f} | CM_JSD: {df_comp['GG_JSD'].mean():.3f}")
+    print(f"ã€å…¨ä½“å¹³å‡ã€‘ GEMINI_NG (ã‚°ãƒ©ãƒ•ãªã—) -> CM_EMD: {df_comp['GNG_EMD'].mean():.3f} | CM_JSD: {df_comp['GNG_JSD'].mean():.3f}")
     print("=============================================================================================================\n")
 
     np.save('estimated_biases.npy', biases_g)
     np.save('annotator_matrices.npy', np.array(matrices))
-    print("[Š®—¹iEMD / JSDj‚ğo—ÍÏB")
+    print("[å®Œäº†ï¼ˆEMD / JSDï¼‰ã‚’å‡ºåŠ›æ¸ˆã€‚")
