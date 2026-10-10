@@ -13,7 +13,9 @@ Part of ISSN: 2303-8969, pp.259-270, March 28th 2025.
 - (Accepted)Yasuhiro IIDA, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Label Propagation for Identifying Noisy Labels in Cervical Cytology," IEEE BIOMDLORE Oct. 2025.
 - (Accepted)Yasuhiro IIDA, Yasuo Ishigure, Tasuku Mariya, Ikuma Sato, and Ayahiko Niimi, "Estimating True Labels from Highly Noisy Real-world Data in Cervical Cytology," IEEE EHB November. 2025.　In: Costin, HN., Magjarevic, R., Petroiu, GG. (eds) Advances in Digital Health and Medical Bioengineering II. EHB 2025. IFMBE Proceedings, vol 144. Springer, Cham. https://doi.org/10.1007/978-3-032-23952-5_36
 - (Accepted)Y. Iida, B. Mrazovac, Y. Ishigure, T. Mariya, I. Sato and A. Niimi, "Robust Metric for the Labeling Quality of the Cervical Cytology Similarity Graph," 2025 33rd Telecommunications Forum (TELFOR), Belgrade, Serbia, 2025, pp. 1-4, doi: 10.1109/TELFOR67910.2025.11314340..
-- (Accepted)Y. Iida, B. Mrazovac, Y. Ishigure, T. Mariya, I. Sato and A. Niimi, "Graph-Based Algorithm for Label Noise Detection and Correction in Cervical Cytology," 2025 IEEE International Conference on Advanced Healthcare Systems (ICAHS), Hammamet, Tunisia, 2025, pp. 1-5, doi: 10.1109/ICAHS66950.2025.11553110. 
+- (Accepted)Y. Iida, B. Mrazovac, Y. Ishigure, T. Mariya, I. Sato and A. Niimi, "Graph-Based Algorithm for Label Noise Detection and Correction in Cervical Cytology," 2025 IEEE International Conference on Advanced Healthcare Systems (ICAHS), Hammamet, Tunisia, 2025, pp. 1-5, doi: 10.1109/ICAHS66950.2025.11553110.
+- (Accepted)Y. Iida, Y. Ishigure, T. Mariya, I. Sato, A. Niimi and Y. Fujino "A Half-Century Evolution of Data Science for Annotation Error Understanding," 2026 IEEE HISTELCON, Tokyo Nov. 2026
+- (Accepted)Y. Iida, Y. Ishigure, T. Mariya, I. Sato, and A. Niimi "Annotator Bias Modeling in Cervical Cytology," 2026 EHB2026 Nov. 2026
 
   
 Full Paper of each research will be uploaded only if it complies with each conference stipulations.
