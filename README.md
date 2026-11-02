@@ -16,8 +16,8 @@ Part of ISSN: 2303-8969, pp.259-270, March 28th 2025.
 - (Accepted)Y. Iida, B. Mrazovac, Y. Ishigure, T. Mariya, I. Sato and A. Niimi, "Graph-Based Algorithm for Label Noise Detection and Correction in Cervical Cytology," 2025 IEEE International Conference on Advanced Healthcare Systems (ICAHS), Hammamet, Tunisia, 2025, pp. 1-5, doi: 10.1109/ICAHS66950.2025.11553110.
 - (Accepted)Y. Iida, Y. Ishigure, T. Mariya, I. Sato, A. Niimi and Y. Fujino "A Half-Century Evolution of Data Science for Annotation Error Understanding," 2026 IEEE HISTELCON, Tokyo Nov. 2026
 - (Accepted)Y. Iida, Y. Ishigure, T. Mariya, I. Sato, and A. Niimi "Annotator Bias Modeling in Cervical Cytology," 2026 EHB2026 Nov. 2026
-- (Accepted)Y. Iida et al., "GEMINI-Graph-based Ensemble for Inconsistency Inference.”, 2026
-- (Accepted)Y. Iida et al., " Multiple Annotator Learning for True Label Inference.”, 2026
+- (Accepted)Y. Iida, Ishigure, T. Mariya, I. Sato, and A. Niimi , "GEMINI-Graph-based Ensemble for Inconsistency Inference.”, 2026 EHB2026 Nov. 2026
+- (Accepted)Y. Iida, Ishigure, T. Mariya, I. Sato, and A. Niimi ., " Multiple Annotator Learning for True Label Inference.”, 2026 EHB2026 Nov. 2026
 
 
 
