@@ -18,6 +18,6 @@ Part of ISSN: 2303-8969, pp.259-270, March 28th 2025.
 - (Accepted)Y. Iida, Y. Ishigure, T. Mariya, I. Sato, and A. Niimi "Annotator Bias Modeling in Cervical Cytology," 2026 EHB2026 Nov. 2026
 - (Accepted)Y. Iida et al., "GEMINI-Graph-based Ensemble for Inconsistency Inference.”, 2026
 - (Accepted)Y. Iida et al., " Multiple Annotator Learning for True Label Inference.”, 2026
-<img width="1317" height="125" alt="image" src="https://github.com/user-attachments/assets/3bc3eec4-22a1-4c8c-83ac-16276a671a9a" />
+
 
 
