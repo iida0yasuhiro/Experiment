@@ -21,5 +21,3 @@ Part of ISSN: 2303-8969, pp.259-270, March 28th 2025.
 <img width="1317" height="125" alt="image" src="https://github.com/user-attachments/assets/3bc3eec4-22a1-4c8c-83ac-16276a671a9a" />
 
 
-  
-Full Paper of each research will be uploaded only if it complies with each conference stipulations.
